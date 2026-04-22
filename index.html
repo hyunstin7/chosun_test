@@ -102,6 +102,9 @@ let currentSubject = "";
 let isRoundOne = true;
 let noteData = JSON.parse(sessionStorage.getItem('quizNoteData')) || {};
 
+// 원문자 배열 (인덱스에 맞춰 사용)
+const CIRCLE_NUMS = ["①", "②", "③", "④", "⑤", "⑥", "⑦", "⑧", "⑨", "⑩"];
+
 const quizCard = document.getElementById("quizCard");
 const status = document.getElementById("status");
 const qEl = document.getElementById("question");
@@ -117,6 +120,14 @@ window.onload=()=>{
     document.getElementById("noteSubjectSelect").add(opt.cloneNode(true));
   });
 };
+
+/* -------------------------------------------------------------------------
+   텍스트 정제 유틸리티
+-------------------------------------------------------------------------- */
+function getCleanText(text) {
+  // ①, 1., 1) 등 모든 종류의 앞부분 번호 표기 제거
+  return text.replace(/^[①②③④⑤⑥⑦⑧⑨⑩1-9\.\)\-\s]+/, "").trim();
+}
 
 /* -------------------------------------------------------------------------
    퀴즈 엔진 로직
@@ -146,7 +157,6 @@ function loadQuestion() {
     return;
   }
 
-  // 사이클 종료 시 처리
   if(idx >= mainSet.length) {
     if(wrongSet.length > 0) {
       isRoundOne = false;
@@ -166,7 +176,6 @@ function loadQuestion() {
   qEl.innerHTML = q.type === "code" ? `<pre>${q.q}</pre>` : q.q;
 
   if(q.type === "mc") {
-    // 보기 랜덤화 및 해설 매핑
     let mappedChoices = q.c.map((text, i) => ({
       text,
       isAns: i === q.a,
@@ -174,15 +183,19 @@ function loadQuestion() {
     }));
     mappedChoices.sort(() => Math.random() - 0.5);
 
-    mappedChoices.forEach(item => {
+    mappedChoices.forEach((item, index) => {
       let b = document.createElement("button");
       b.className = "choice";
-      b.innerText = item.text;
+      
+      // 요청하신 원문자(①, ②...) 적용
+      const cleanText = getCleanText(item.text);
+      const circleNum = CIRCLE_NUMS[index] || (index + 1) + ".";
+      b.innerText = `${circleNum} ${cleanText}`;
+      
       b.onclick = () => checkMC(item, q, mappedChoices);
       cEl.appendChild(b);
     });
   } else {
-    // 주관식/코드형
     input.style.display = "block";
     document.getElementById("checkBtn").style.display = "inline-block";
     document.getElementById("checkBtn").onclick = () => {
@@ -204,18 +217,24 @@ function checkMC(selected, q, allMapped) {
   btns.forEach(b => b.disabled = true);
   exEl.style.display = "block";
 
+  const selectedClean = getCleanText(selected.text);
+  const correctItem = allMapped.find(i => i.isAns);
+  const correctClean = getCleanText(correctItem.text);
+
   if(selected.isAns) {
     exEl.innerHTML = `<b>정답입니다! ✨</b><br>${selected.explanation}`;
     exEl.className = "ex-correct";
-    btns.forEach(b => { if(b.innerText === selected.text) b.classList.add('correct-ans'); });
+    btns.forEach(b => { 
+        if(getCleanText(b.innerText) === selectedClean) b.classList.add('correct-ans'); 
+    });
     finishQ(q, true);
   } else {
-    let correctItem = allMapped.find(i => i.isAns);
-    exEl.innerHTML = `<b>틀렸습니다!</b><br>❌ 선택한 답 해석: ${selected.explanation}<br><br><b>✅ 정답 해석 [${correctItem.text}]:</b><br>${correctItem.explanation}`;
+    exEl.innerHTML = `<b>틀렸습니다!</b><br>❌ 선택한 답 해석: ${selected.explanation}<br><br><b>✅ 정답 해석 [${correctClean}]:</b><br>${correctItem.explanation}`;
     exEl.className = "ex-wrong";
     btns.forEach(b => {
-      if(b.innerText === selected.text) b.classList.add('wrong-ans');
-      if(b.innerText === correctItem.text) b.classList.add('correct-ans');
+      const btnClean = getCleanText(b.innerText);
+      if(btnClean === selectedClean) b.classList.add('wrong-ans');
+      if(btnClean === correctClean) b.classList.add('correct-ans');
     });
     recordWrong(q);
     wrongSet.push(q);
@@ -246,7 +265,7 @@ function resetUI() {
 }
 
 /* -------------------------------------------------------------------------
-   오답노트 및 모달 로직
+   오답노트 로직
 -------------------------------------------------------------------------- */
 function recordWrong(q) {
   if(!noteData[currentSubject]) noteData[currentSubject] = {};
@@ -289,11 +308,14 @@ function renderNote() {
     const qData = window.questions[sub].find(q => q.id == id);
     const item = document.createElement("div");
     item.className = "note-item";
+    
+    let answerText = qData.type === 'mc' ? getCleanText(qData.c[qData.a]) : qData.a;
+
     item.innerHTML = `
       <div style="margin-bottom:8px;"><b>Q.</b> ${qData.q} <small style="color:red;">(${count}회 오답)</small></div>
       <button onclick="this.nextElementSibling.style.display='block'" style="font-size:12px; padding:5px 8px; cursor:pointer;">정답/해설 보기</button>
       <div class="note-ans-box">
-        <b>정답:</b> ${qData.type==='mc' ? qData.c[qData.a] : qData.a}<br>
+        <b>정답:</b> ${answerText}<br>
         <b>해설:</b> ${qData.ex ? qData.ex[qData.a] : '등록된 해설이 없습니다.'}
       </div>
     `;
