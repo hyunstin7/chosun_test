@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>퀴즈 시스템 Pro (Full Version)</title>
+<style>
+  /* ===== 기본 스타일 ===== */
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', sans-serif; background: #f5f7fb; padding: 16px; display: flex; justify-content: center; }
+  .container { width: 100%; max-width: 720px; }
+  .card { background: white; border-radius: 14px; padding: 18px; box-shadow: 0 6px 20px rgba(0,0,0,0.08); margin-bottom: 16px; }
+  h2 { font-size: 18px; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
+  h3 { font-size: 16px; line-height: 1.4; margin-bottom: 20px; }
+  
+  /* ===== 상단 버튼 그룹 ===== */
+  .btn-group { display: flex; gap: 8px; flex-wrap: wrap; }
+  select, button { font-size: 14px; border-radius: 10px; border: 1px solid #ddd; padding: 10px; }
+  #startBtn { background: #4CAF50; color: white; border: none; font-weight: bold; cursor: pointer; }
+  #noteBtn { background: #ff9800; color: white; border: none; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 4px; }
+
+  /* ===== 퀴즈 요소 ===== */
+  #status { font-size: 13px; color: #666; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px dashed #ddd; }
+  .choice { display: block; width: 100%; text-align: left; padding: 14px; margin: 8px 0; border-radius: 10px; border: 1px solid #eee; background: #fafafa; cursor: pointer; transition: 0.2s; }
+  .choice:hover:not(:disabled) { background: #e8f0ff; border-color: #4a90e2; }
+  .choice.correct-ans { background: #d4edda !important; border-color: #28a745 !important; color: #155724; font-weight: bold; }
+  .choice.wrong-ans { background: #f8d7da !important; border-color: #dc3545 !important; color: #721c24; }
+
+  /* ===== 해설 박스 ===== */
+  #explanation { margin-top: 15px; padding: 15px; border-radius: 10px; display: none; line-height: 1.6; font-size: 14px; }
+  .ex-wrong { background: #fff3f3; border-left: 5px solid #e74c3c; color: #c0392b; }
+  .ex-correct { background: #f0fff4; border-left: 5px solid #2ecc71; color: #27ae60; }
+
+  textarea { width: 100%; margin-top: 10px; border: 1px solid #ddd; padding: 12px; border-radius: 10px; font-family: inherit; }
+  #nextBtn { width: 100%; background: #111; color: white; padding: 16px; border-radius: 30px; display: none; cursor: pointer; margin-top: 10px; font-size: 16px; }
+
+  /* ===== 오답노트 모달 ===== */
+  .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); }
+  .modal-content { background: white; margin: 40px auto; padding: 25px; width: 95%; max-width: 650px; border-radius: 20px; max-height: 85vh; overflow-y: auto; }
+  .tab-menu { display: flex; background: #eee; border-radius: 10px; padding: 4px; margin: 15px 0; }
+  .tab-link { flex: 1; padding: 10px; text-align: center; cursor: pointer; border-radius: 8px; font-size: 13px; }
+  .tab-link.active { background: white; box-shadow: 0 2px 5px rgba(0,0,0,0.1); font-weight: bold; color: #3498db; }
+  .note-item { border-bottom: 1px solid #f0f0f0; padding: 15px 0; }
+  .note-ans-box { display: none; margin-top: 8px; padding: 10px; background: #f9f9f9; border-left: 4px solid #2ecc71; }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="card">
+    <h2>📂 과목 선택</h2>
+    <div class="btn-group">
+      <select id="subjectSelect"><option value="">과목을 선택하세요</option></select>
+      <button id="startBtn">▶ 시작</button>
+      <button id="noteBtn">📝 오답노트</button>
+    </div>
+  </div>
+
+  <div class="card" id="quizCard" style="display:none;">
+    <div id="status"></div>
+    <h3 id="question"></h3>
+    <div id="choices"></div>
+    <textarea id="input" style="display:none;" placeholder="답안을 입력하세요..."></textarea>
+    
+    <div id="explanation"></div>
+
+    <div class="btn-group" style="margin-top:15px;">
+      <button id="checkBtn" style="display:none; background:#3498db; color:white; border:none;">정답 확인</button>
+      <button id="correctBtn" style="display:none; background:#2ecc71; color:white; border:none;">맞음</button>
+      <button id="wrongBtn" style="display:none; background:#e74c3c; color:white; border:none;">틀림</button>
+    </div>
+    
+    <button id="nextBtn">다음 문제 →</button>
+  </div>
+</div>
+
+<div id="noteModal" class="modal">
+  <div class="modal-content">
+    <div style="display:flex; justify-content:space-between; align-items:center;">
+      <h2 style="margin:0;">📝 오답노트</h2>
+      <select id="noteSubjectSelect"></select>
+    </div>
+    <div class="tab-menu">
+      <div class="tab-link active" onclick="changeTab(0)">1회 틀림</div>
+      <div class="tab-link" onclick="changeTab(1)">2회 틀림</div>
+      <div class="tab-link" onclick="changeTab(2)">3회 이상</div>
+    </div>
+    <div id="noteList"></div>
+    <button onclick="closeModal()" style="width:100%; margin-top:20px; padding:12px; border-radius:10px; border:none; background:#eee; cursor:pointer;">닫기</button>
+  </div>
+</div>
+
+<script src="./quiz/question.js"></script>
+<script>
+/* -------------------------------------------------------------------------
+   변수 및 초기화
+-------------------------------------------------------------------------- */
+let questions=[], TOTAL=0;
+let mainSet=[], wrongSet=[], idx=0;
+let sessionCorrect=0, sessionWrong=0;
+let currentSubject = "";
+let isRoundOne = true;
+let noteData = JSON.parse(sessionStorage.getItem('quizNoteData')) || {};
+
+// 원문자 배열 (인덱스에 맞춰 사용)
+const CIRCLE_NUMS = ["①", "②", "③", "④", "⑤", "⑥", "⑦", "⑧", "⑨", "⑩"];
+
+const quizCard = document.getElementById("quizCard");
+const status = document.getElementById("status");
+const qEl = document.getElementById("question");
+const cEl = document.getElementById("choices");
+const input = document.getElementById("input");
+const exEl = document.getElementById("explanation");
+const nextBtn = document.getElementById("nextBtn");
+
+const SUBJECT_ORDER = [
+  "인공지능개론",
+  "직업윤리와 기초",
+  "지능형사물인터넷",
+  "정보시스템보안",
+  "웹프로그래밍",
+  "파이썬프로그래밍",
+  "정보시스템기반기술"
+];
+
+const SUBJECT_LABELS = {
+  "인공지능개론": "인공지능개론(목, 1교시)",
+  "직업윤리와 기초": "직업윤리와 기초(목, 2교시)",
+  "지능형사물인터넷": "지능형사물인터넷(목, 3교시)",
+  "정보시스템보안": "정보시스템보안(목, 4교시)",
+  "웹프로그래밍": "웹프로그래밍(목, 5교시)",
+  "파이썬프로그래밍": "파이썬 프로그래밍(금, 2교시)",
+  "정보시스템기반기술": "정보시스템기반기술(금, 3교시)"
+};
+
+function getOrderedSubjects() {
+  const subjects = Object.keys(window.questions);
+  const known = SUBJECT_ORDER.filter(sub => subjects.includes(sub));
+  const extra = subjects.filter(sub => !SUBJECT_ORDER.includes(sub));
+  return [...known, ...extra];
+}
+
+function getSubjectLabel(subject, index) {
+  return SUBJECT_LABELS[subject] || `${subject} (${index + 1}교시)`;
+}
+
+window.onload=()=>{
+  getOrderedSubjects().forEach((sub, index) => {
+    let opt = new Option(getSubjectLabel(sub, index), sub);
+    document.getElementById("subjectSelect").add(opt);
+    document.getElementById("noteSubjectSelect").add(opt.cloneNode(true));
+  });
+};
+
+/* -------------------------------------------------------------------------
+   보기 번호 표시 유틸리티
+-------------------------------------------------------------------------- */
+function getChoiceLabel(index) {
+  return CIRCLE_NUMS[index] || `${index + 1}.`;
+}
+
+function getDisplayChoiceText(text, index) {
+  return `${getChoiceLabel(index)} ${text}`;
+}
+
+function escapeHtml(value) {
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+/* -------------------------------------------------------------------------
+   퀴즈 엔진 로직
+-------------------------------------------------------------------------- */
+document.getElementById("startBtn").onclick=()=>{
+  currentSubject = document.getElementById("subjectSelect").value;
+  if(!currentSubject) return alert("과목을 선택해주세요!");
+  
+  quizCard.style.display = "block";
+  questions = [...window.questions[currentSubject]];
+  TOTAL = questions.length;
+  
+  mainSet = [...questions].sort(()=>Math.random()-0.5);
+  wrongSet = [];
+  idx = 0; sessionCorrect = 0; sessionWrong = 0;
+  isRoundOne = true;
+  
+  loadQuestion();
+};
+
+function loadQuestion() {
+  if(sessionCorrect === TOTAL && isRoundOne === false && wrongSet.length === 0) {
+    qEl.innerText = "🎊 모든 문제를 완벽하게 학습했습니다!";
+    cEl.innerHTML = ""; exEl.style.display = "none";
+    nextBtn.style.display = "none";
+    status.innerText = "학습 완료";
+    return;
+  }
+
+  if(idx >= mainSet.length) {
+    if(wrongSet.length > 0) {
+      isRoundOne = false;
+      mainSet = [...wrongSet].sort(()=>Math.random()-0.5);
+      wrongSet = [];
+      idx = 0;
+      alert("한 사이클이 끝났습니다. 틀린 문제 복습을 시작합니다!");
+    } else if(isRoundOne) {
+       qEl.innerText = "🎉 축하합니다! 모든 문제를 한 번에 다 맞히셨습니다.";
+       return;
+    }
+  }
+
+  let q = mainSet[idx];
+  resetUI();
+
+  qEl.innerHTML = q.type === "code" ? `<pre>${escapeHtml(q.q)}</pre>` : escapeHtml(q.q);
+
+  if(q.type === "mc") {
+    let mappedChoices = q.c.map((text, i) => ({
+      text,
+      isAns: i === q.a,
+      explanation: q.ex ? q.ex[i] : "해설이 등록되지 않았습니다."
+    }));
+    mappedChoices.sort(() => Math.random() - 0.5);
+
+    mappedChoices.forEach((item, index) => {
+      let b = document.createElement("button");
+      b.className = "choice";
+      
+      // 보기 내용은 원문 그대로 두고, 화면 표시용 번호만 앞에 붙임
+      b.innerText = getDisplayChoiceText(item.text, index);
+      
+      b.onclick = () => checkMC(item, q, mappedChoices);
+      cEl.appendChild(b);
+    });
+  } else {
+    input.style.display = "block";
+    document.getElementById("checkBtn").style.display = "inline-block";
+    document.getElementById("checkBtn").onclick = () => {
+      exEl.innerHTML = `<b>정답:</b><br>${q.a.toString().replace(/\n/g, '<br>')}`;
+      exEl.className = "ex-correct";
+      exEl.style.display = "block";
+      document.getElementById("correctBtn").style.display = "inline-block";
+      document.getElementById("wrongBtn").style.display = "inline-block";
+      document.getElementById("checkBtn").style.display = "none";
+    };
+    document.getElementById("correctBtn").onclick = () => finishQ(q, true);
+    document.getElementById("wrongBtn").onclick = () => { recordWrong(q); wrongSet.push(q); finishQ(q, false); };
+  }
+  updateStatus();
+}
+
+function checkMC(selected, q, allMapped) {
+  const btns = document.querySelectorAll('.choice');
+  btns.forEach(b => b.disabled = true);
+  exEl.style.display = "block";
+
+  const allChoicesExplanationHtml = allMapped.map((item, index) => {
+    const label = getChoiceLabel(index);
+    const mark = item.isAns ? "✅ 정답" : "• 오답";
+    return `<div style="margin-top:8px;"><b>${label} ${mark} - ${escapeHtml(item.text)}</b><br>${escapeHtml(item.explanation)}</div>`;
+  }).join('');
+
+  if(selected.isAns) {
+    exEl.innerHTML = `<b>정답입니다! ✨</b><br><br><b>보기별 해설</b>${allChoicesExplanationHtml}`;
+    exEl.className = "ex-correct";
+    btns.forEach((b, index) => {
+      if(allMapped[index] === selected) b.classList.add('correct-ans');
+    });
+    finishQ(q, true);
+  } else {
+    exEl.innerHTML = `<b>틀렸습니다!</b><br><br><b>보기별 해설</b>${allChoicesExplanationHtml}`;
+    exEl.className = "ex-wrong";
+    btns.forEach((b, index) => {
+      if(allMapped[index] === selected) b.classList.add('wrong-ans');
+      if(allMapped[index].isAns) b.classList.add('correct-ans');
+    });
+    recordWrong(q);
+    wrongSet.push(q);
+    finishQ(q, false);
+  }
+}
+
+function finishQ(q, isCorrect) {
+  if(isCorrect) sessionCorrect++; else sessionWrong++;
+  nextBtn.style.display = "block";
+  nextBtn.onclick = () => { idx++; loadQuestion(); };
+  updateStatus();
+}
+
+function updateStatus() {
+  let solved = sessionCorrect + sessionWrong;
+  let rate = solved === 0 ? 0 : Math.round((sessionCorrect / solved) * 100);
+  let roundText = isRoundOne ? "전체 사이클 진행 중" : "오답 복습 중";
+  status.innerHTML = `<b>[${roundText}]</b> 맞힌 문제: ${sessionCorrect}/${TOTAL} | 정답률: ${rate}%`;
+}
+
+function resetUI() {
+  cEl.innerHTML = ""; input.value = ""; input.style.display = "none";
+  exEl.style.display = "none"; nextBtn.style.display = "none";
+  document.getElementById("checkBtn").style.display = "none";
+  document.getElementById("correctBtn").style.display = "none";
+  document.getElementById("wrongBtn").style.display = "none";
+}
+
+/* -------------------------------------------------------------------------
+   오답노트 로직
+-------------------------------------------------------------------------- */
+function recordWrong(q) {
+  if(!noteData[currentSubject]) noteData[currentSubject] = {};
+  noteData[currentSubject][q.id] = (noteData[currentSubject][q.id] || 0) + 1;
+  sessionStorage.setItem('quizNoteData', JSON.stringify(noteData));
+}
+
+const modal = document.getElementById("noteModal");
+let currentTab = 0;
+
+document.getElementById("noteBtn").onclick = () => {
+  modal.style.display = "block";
+  document.getElementById("noteSubjectSelect").value = currentSubject || getOrderedSubjects()[0];
+  renderNote();
+};
+
+function changeTab(t) {
+  currentTab = t;
+  document.querySelectorAll('.tab-link').forEach((el, i) => el.classList.toggle('active', i === t));
+  renderNote();
+}
+
+document.getElementById("noteSubjectSelect").onchange = renderNote;
+
+function renderNote() {
+  const sub = document.getElementById("noteSubjectSelect").value;
+  const list = document.getElementById("noteList");
+  list.innerHTML = "";
+  if(!noteData[sub]) { list.innerHTML = "<p style='text-align:center; padding:20px;'>기록된 오답이 없습니다.</p>"; return; }
+
+  const entries = Object.entries(noteData[sub]).filter(([id, count]) => {
+    if(currentTab === 0) return count === 1;
+    if(currentTab === 1) return count === 2;
+    return count >= 3;
+  });
+
+  if(entries.length === 0) { list.innerHTML = "<p style='text-align:center; padding:20px;'>해당하는 문제가 없습니다.</p>"; return; }
+
+  entries.forEach(([id, count]) => {
+    const qData = window.questions[sub].find(q => q.id == id);
+    const item = document.createElement("div");
+    item.className = "note-item";
+    
+    let answerText = qData.type === 'mc' ? qData.c[qData.a] : qData.a;
+    let explanationText = qData.ex ? qData.ex[qData.a] : '등록된 해설이 없습니다.';
+
+    item.innerHTML = `
+      <div style="margin-bottom:8px;"><b>Q.</b> ${escapeHtml(qData.q)} <small style="color:red;">(${count}회 오답)</small></div>
+      <button onclick="this.nextElementSibling.style.display='block'" style="font-size:12px; padding:5px 8px; cursor:pointer;">정답/해설 보기</button>
+      <div class="note-ans-box">
+        <b>정답:</b> ${escapeHtml(answerText)}<br>
+        <b>해설:</b> ${escapeHtml(explanationText)}
+      </div>
+    `;
+    list.appendChild(item);
+  });
+}
+
+function closeModal() { modal.style.display = "none"; }
+window.onclick = (e) => { if(e.target == modal) closeModal(); };
+</script>
+</body>
+</html>
