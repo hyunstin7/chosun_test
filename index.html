@@ -21,10 +21,12 @@
 
   /* ===== 퀴즈 요소 ===== */
   #status { font-size: 13px; color: #666; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px dashed #ddd; }
-  .choice { display: block; width: 100%; text-align: left; padding: 14px; margin: 8px 0; border-radius: 10px; border: 1px solid #eee; background: #fafafa; cursor: pointer; transition: 0.2s; }
+  .choice { display: block; width: 100%; text-align: left; padding: 14px; margin: 8px 0; border-radius: 10px; border: 1px solid #eee; background: #fafafa; cursor: pointer; transition: 0.2s; white-space: pre-wrap; }
   .choice:hover:not(:disabled) { background: #e8f0ff; border-color: #4a90e2; }
   .choice.correct-ans { background: #d4edda !important; border-color: #28a745 !important; color: #155724; font-weight: bold; }
   .choice.wrong-ans { background: #f8d7da !important; border-color: #dc3545 !important; color: #721c24; }
+  #question pre, .answer-code { white-space: pre-wrap; word-break: break-word; overflow-x: auto; font-family: Consolas, 'Courier New', monospace; font-size: 13px; line-height: 1.5; background: #f8f9fb; border: 1px solid #edf0f5; border-radius: 10px; padding: 12px; }
+  #question pre { margin: 0; }
 
   /* ===== 해설 박스 ===== */
   #explanation { margin-top: 15px; padding: 15px; border-radius: 10px; display: none; line-height: 1.6; font-size: 14px; }
@@ -216,7 +218,7 @@ function loadQuestion() {
   let q = mainSet[idx];
   resetUI();
 
-  qEl.innerHTML = q.type === "code" ? `<pre>${escapeHtml(q.q)}</pre>` : escapeHtml(q.q);
+  qEl.innerHTML = (q.type === "code" || q.code) ? `<pre>${escapeHtml(q.q)}</pre>` : escapeHtml(q.q);
 
   if(q.type === "mc") {
     let mappedChoices = q.c.map((text, i) => ({
@@ -240,7 +242,10 @@ function loadQuestion() {
     input.style.display = "block";
     document.getElementById("checkBtn").style.display = "inline-block";
     document.getElementById("checkBtn").onclick = () => {
-      exEl.innerHTML = `<b>정답:</b><br>${q.a.toString().replace(/\n/g, '<br>')}`;
+      const answerHtml = q.type === "code"
+        ? `<pre class="answer-code">${escapeHtml(q.a)}</pre>`
+        : escapeHtml(q.a.toString()).replace(/\n/g, '<br>');
+      exEl.innerHTML = `<b>정답:</b><br>${answerHtml}`;
       exEl.className = "ex-correct";
       exEl.style.display = "block";
       document.getElementById("correctBtn").style.display = "inline-block";
