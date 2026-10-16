@@ -1,0 +1,1356 @@
+웹프레임워크(넥사크로) 7교시 — 코드 빈칸 객관식 23문항 + 보충 객관식 7문항
+
+========================================================================
+(핵심) Q1. 컬럼 개수·행 개수·컬럼 ID
+Dataset1의 컬럼 수와 현재 행 수를 구하고, 반복문에서 각 컬럼 ID를 확인한다.
+빈칸 【1】 → 【2】 → 【3】에 들어갈 내용의 올바른 조합을 고르시오.
+
+[예시 코드]
+this.btn_1_1_onclick = function(obj:nexacro.Button, e:nexacro.ClickEventInfo)
+{
+    var nColCount = this.Dataset1.【1】();
+    var nRowCount = this.Dataset1.【2】();
+    this.txtRtn1.set_value("컬럼 개수 : " + nColCount + " Row(데이터) 개수 : " + nRowCount);
+    for (var i = 0; i < nColCount; i++)
+    {
+        var sColID = this.Dataset1.【3】(i);
+        trace("col ID = " + sColID);
+    }
+};
+
+1번 보기
+【1】 getColCount
+【2】 getRowCount
+【3】 getColID
+
+2번 보기
+【1】 getRowCount
+【2】 getColCount
+【3】 getColID
+
+3번 보기
+【1】 getColCount
+【2】 getRowCount
+【3】 getColumn
+
+4번 보기
+【1】 getColID
+【2】 getRowType
+【3】 getColCount
+
+정답: 1번
+[보기별 해설]
+1: getColCount()는 컬럼 수, getRowCount()는 현재 행 수, getColID(i)는 i번째 컬럼 ID입니다. 컬럼 인덱스는 0부터 시작합니다. 원문의 Datatset1은 나머지 예제와 같은 Dataset1로 통일했습니다.
+2: 【1】은 컬럼 수, 【2】는 행 수여야 하는데 두 메서드가 바뀌었습니다.
+3: 【3】은 컬럼 ID를 조회하는 자리입니다. getColumn()은 행 인덱스와 컬럼 ID로 값을 읽는 메서드입니다.
+4: 컬럼 개수·행 개수·컬럼 ID를 구하는 순서와 맞지 않습니다. getRowType()은 행 상태 조회입니다.
+
+[완성 코드]
+this.btn_1_1_onclick = function(obj:nexacro.Button, e:nexacro.ClickEventInfo)
+{
+    var nColCount = this.Dataset1.getColCount();
+    var nRowCount = this.Dataset1.getRowCount();
+    this.txtRtn1.set_value("컬럼 개수 : " + nColCount + " Row(데이터) 개수 : " + nRowCount);
+    for (var i = 0; i < nColCount; i++)
+    {
+        var sColID = this.Dataset1.getColID(i);
+        trace("col ID = " + sColID);
+    }
+};
+
+
+========================================================================
+(핵심) Q2. 결과 표시·반복 범위·로그 출력
+개수 결과를 txtRtn1에 표시하고, nColCount개 컬럼을 순회하여 각 ID를 개발 로그로 출력한다.
+빈칸 【1】 → 【2】 → 【3】에 들어갈 내용의 올바른 조합을 고르시오.
+
+[예시 코드]
+this.btn_1_1_onclick = function(obj:nexacro.Button, e:nexacro.ClickEventInfo)
+{
+    var nColCount = this.Dataset1.getColCount();
+    var nRowCount = this.Dataset1.getRowCount();
+    this.txtRtn1.【1】("컬럼 개수 : " + nColCount + " Row(데이터) 개수 : " + nRowCount);
+    for (var i = 0; i < 【2】; i++)
+    {
+        var sColID = this.Dataset1.getColID(i);
+        【3】("col ID = " + sColID);
+    }
+};
+
+1번 보기
+【1】 set_value
+【2】 nRowCount
+【3】 trace
+
+2번 보기
+【1】 set_value
+【2】 nColCount
+【3】 trace
+
+3번 보기
+【1】 getColumn
+【2】 nColCount
+【3】 trace
+
+4번 보기
+【1】 set_value
+【2】 nColCount
+【3】 alert
+
+정답: 2번
+[보기별 해설]
+1: 반복 대상은 행이 아닌 컬럼입니다. 반복 상한은 nRowCount가 아니라 nColCount입니다.
+2: set_value()는 value 속성을 지원하는 컴포넌트의 값을 바꿉니다. i < nColCount이므로 0부터 nColCount-1까지 순회합니다. trace()는 결과를 개발 로그로 출력하며, 화면에 값을 표시하는 set_value()와 다릅니다.
+3: txtRtn1에 값을 표시하는 자리는 set_value()입니다. getColumn()은 Dataset 값 조회입니다.
+4: 요구한 동작은 개발 로그 출력입니다. 예제의 trace() 대신 alert()를 쓰면 알림창 출력으로 바뀝니다.
+
+[완성 코드]
+this.btn_1_1_onclick = function(obj:nexacro.Button, e:nexacro.ClickEventInfo)
+{
+    var nColCount = this.Dataset1.getColCount();
+    var nRowCount = this.Dataset1.getRowCount();
+    this.txtRtn1.set_value("컬럼 개수 : " + nColCount + " Row(데이터) 개수 : " + nRowCount);
+    for (var i = 0; i < nColCount; i++)
+    {
+        var sColID = this.Dataset1.getColID(i);
+        trace("col ID = " + sColID);
+    }
+};
+
+
+========================================================================
+(핵심) Q3. 문자열 컬럼 추가
+Dataset1에 COL_CHK라는 문자열(STRING) 타입 컬럼을 추가한다. COL_CHK는 아직 존재하지 않는다.
+빈칸 【1】 → 【2】 → 【3】에 들어갈 내용의 올바른 조합을 고르시오.
+
+[예시 코드]
+this.btn_1_2_onclick = function(obj:nexacro.Button, e:nexacro.ClickEventInfo)
+{
+    this.Dataset1.【1】("【2】", "【3】");
+};
+
+1번 보기
+【1】 addRow
+【2】 COL_CHK
+【3】 STRING
+
+2번 보기
+【1】 addColumn
+【2】 COL_CHK
+【3】 INT
+
+3번 보기
+【1】 addColumn
+【2】 COL_CHK
+【3】 STRING
+
+4번 보기
+【1】 addColumn
+【2】 FULL_NAME
+【3】 STRING
+
+정답: 3번
+[보기별 해설]
+1: addRow()는 행 추가이며 COL_CHK 컬럼을 생성하는 메서드가 아닙니다.
+2: 요구한 컬럼 타입은 문자열 STRING입니다. INT는 지정한 문자열 타입과 다릅니다.
+3: addColumn("COL_CHK", "STRING")으로 컬럼을 추가합니다. 코드에 큰따옴표가 이미 있으므로 보기에는 빈칸에 들어갈 내용만 표시했습니다.
+4: 추가하도록 지정한 컬럼 ID는 COL_CHK입니다. FULL_NAME을 추가하는 선택지는 요구와 다릅니다.
+
+[완성 코드]
+this.btn_1_2_onclick = function(obj:nexacro.Button, e:nexacro.ClickEventInfo)
+{
+    this.Dataset1.addColumn("COL_CHK", "STRING");
+};
+
+
+========================================================================
+(핵심) Q4. 사번으로 첫 행 찾기
+EMPL_ID가 KR120인 첫 번째 행을 찾아 이름을 표시한다. 해당 사원은 존재한다고 가정한다.
+빈칸 【1】 → 【2】 → 【3】에 들어갈 내용의 올바른 조합을 고르시오.
+
+[예시 코드]
+this.btn_2_1_onclick = function(obj:nexacro.Button, e:nexacro.ClickEventInfo)
+{
+    var nRow = this.Dataset1.【1】("【2】", "【3】");
+    var sVal = this.Dataset1.getColumn(nRow, "FULL_NAME");
+    trace(sVal);
+    this.txtRtn1.set_value(sVal);
+};
+
+1번 보기
+【1】 extractRows
+【2】 EMPL_ID
+【3】 KR120
+
+2번 보기
+【1】 findRow
+【2】 FULL_NAME
+【3】 KR120
+
+3번 보기
+【1】 findRow
+【2】 EMPL_ID
+【3】 KR040
+
+4번 보기
+【1】 findRow
+【2】 EMPL_ID
+【3】 KR120
+
+정답: 4번
+[보기별 해설]
+1: 이 예제는 컬럼 ID와 값을 받아 첫 행 인덱스를 찾습니다. extractRows()는 조건식으로 인덱스 배열을 구합니다.
+2: 사번을 찾는 컬럼은 FULL_NAME이 아니라 EMPL_ID입니다.
+3: 요구한 검색값은 KR120입니다. KR040은 다른 사번입니다.
+4: findRow(컬럼 ID, 값)은 처음 일치하는 행 인덱스를 반환합니다. 없으면 -1이므로 실제 프로그램에서는 getColumn() 전에 nRow >= 0인지 확인해야 합니다. 이 문제는 사원이 존재하는 조건입니다.
+
+[완성 코드]
+this.btn_2_1_onclick = function(obj:nexacro.Button, e:nexacro.ClickEventInfo)
+{
+    var nRow = this.Dataset1.findRow("EMPL_ID", "KR120");
+    var sVal = this.Dataset1.getColumn(nRow, "FULL_NAME");
+    trace(sVal);
+    this.txtRtn1.set_value(sVal);
+};
+
+
+========================================================================
+(핵심) Q5. 검색한 행의 이름 조회
+찾은 행 인덱스 nRow를 사용해 FULL_NAME의 현재값을 조회한다. KR120 사원은 존재한다.
+빈칸 【1】 → 【2】 → 【3】에 들어갈 내용의 올바른 조합을 고르시오.
+
+[예시 코드]
+this.btn_2_1_onclick = function(obj:nexacro.Button, e:nexacro.ClickEventInfo)
+{
+    var nRow = this.Dataset1.findRow("EMPL_ID", "KR120");
+    var sVal = this.Dataset1.【1】(【2】, "【3】");
+    trace(sVal);
+    this.txtRtn1.set_value(sVal);
+};
+
+1번 보기
+【1】 getColumn
+【2】 nRow
+【3】 FULL_NAME
+
+2번 보기
+【1】 getOrgColumn
+【2】 nRow
+【3】 FULL_NAME
+
+3번 보기
+【1】 getColumn
+【2】 nRow
+【3】 EMPL_ID
+
+4번 보기
+【1】 getColumn
+【2】 nRow + 1
+【3】 FULL_NAME
+
+정답: 1번
+[보기별 해설]
+1: getColumn(nRow, "FULL_NAME")은 findRow()에서 찾은 행의 이름을 읽습니다. 인수 순서는 행 인덱스 → 컬럼 ID입니다. 읽은 값은 trace()로 출력하고 txtRtn1.set_value()로 표시합니다.
+2: 요구한 것은 현재값입니다. getOrgColumn()은 변경 전 기준 원본값을 조회합니다.
+3: 조회할 값은 사번이 아닌 이름입니다. 컬럼은 FULL_NAME이어야 합니다.
+4: 검색 결과인 nRow 자체를 사용해야 합니다. 1을 더하면 검색한 행 다음 위치를 읽게 됩니다.
+
+[완성 코드]
+this.btn_2_1_onclick = function(obj:nexacro.Button, e:nexacro.ClickEventInfo)
+{
+    var nRow = this.Dataset1.findRow("EMPL_ID", "KR120");
+    var sVal = this.Dataset1.getColumn(nRow, "FULL_NAME");
+    trace(sVal);
+    this.txtRtn1.set_value(sVal);
+};
+
+
+========================================================================
+(핵심) Q6. 두 조건을 모두 만족하는 행 찾기
+부서가 K10이고 급여가 6000보다 큰 첫 사원의 이름을 읽는다. 두 조건을 모두 만족하는 행이 존재한다.
+빈칸 【1】 → 【2】 → 【3】에 들어갈 내용의 올바른 조합을 고르시오.
+
+[예시 코드]
+this.btn_2_2_onclick = function(obj:nexacro.Button, e:nexacro.ClickEventInfo)
+{
+    var nRow = this.Dataset1.【1】("【2】");
+    var sVal = this.Dataset1.getColumn(nRow, "【3】");
+    this.txtRtn1.set_value(sVal);
+};
+
+1번 보기
+【1】 findRowExpr
+【2】 DEPT_CODE == 'K10' || SALARY > 6000
+【3】 FULL_NAME
+
+2번 보기
+【1】 findRowExpr
+【2】 DEPT_CODE == 'K10' && SALARY > 6000
+【3】 FULL_NAME
+
+3번 보기
+【1】 findRowExpr
+【2】 DEPT_CODE == 'K10' && SALARY < 6000
+【3】 FULL_NAME
+
+4번 보기
+【1】 findRowExpr
+【2】 DEPT_CODE == 'K10' && SALARY > 6000
+【3】 EMPL_ID
+
+정답: 2번
+[보기별 해설]
+1: ||는 둘 중 한 조건만 참이어도 일치합니다. 두 조건을 모두 만족하려면 &&가 필요합니다.
+2: findRowExpr()는 문자열 조건식으로 검색합니다. &&는 두 조건을 모두 만족해야 한다는 뜻입니다. 조건식 전체의 큰따옴표는 코드에 있으므로 보기에는 DEPT_CODE == 'K10' && SALARY > 6000을 표시했습니다. 없으면 -1이 반환됩니다.
+3: 요구한 급여 조건은 6000보다 큼(>)입니다. 작음(<)으로 바뀌었습니다.
+4: 검색한 사원의 이름을 읽어야 하므로 마지막 컬럼은 FULL_NAME입니다. EMPL_ID는 사번입니다.
+
+[완성 코드]
+this.btn_2_2_onclick = function(obj:nexacro.Button, e:nexacro.ClickEventInfo)
+{
+    var nRow = this.Dataset1.findRowExpr("DEPT_CODE == 'K10' && SALARY > 6000");
+    var sVal = this.Dataset1.getColumn(nRow, "FULL_NAME");
+    this.txtRtn1.set_value(sVal);
+};
+
+
+========================================================================
+(핵심) Q7. 조건에 맞는 모든 행 순회
+K10 부서의 모든 행 인덱스를 배열로 구하고, 배열 원소 수만큼 반복하여 각 이름의 현재값을 읽는다.
+빈칸 【1】 → 【2】 → 【3】에 들어갈 내용의 올바른 조합을 고르시오.
+
+[예시 코드]
+this.btn_2_3_onclick = function(obj:nexacro.Button, e:nexacro.ClickEventInfo)
+{
+    var sText = "";
+    var arrRow = this.Dataset1.【1】("DEPT_CODE == 'K10'");
+    for (var i = 0; i < arrRow.【2】; i++)
+    {
+        var sValue = this.Dataset1.【3】(arrRow[i], "FULL_NAME");
+        sText += sValue + "\n";
+    }
+    this.txtRtn1.set_value(sText);
+};
+
+1번 보기
+【1】 findRowExpr
+【2】 length
+【3】 getColumn
+
+2번 보기
+【1】 extractRows
+【2】 getRowCount
+【3】 getColumn
+
+3번 보기
+【1】 extractRows
+【2】 length
+【3】 getColumn
+
+4번 보기
+【1】 extractRows
+【2】 length
+【3】 setColumn
+
+정답: 3번
+[보기별 해설]
+1: findRowExpr()는 행 인덱스 하나를 반환합니다. 모든 일치 인덱스를 배열로 받는 extractRows()가 필요합니다.
+2: arrRow는 인덱스 배열이므로 원소 수는 length로 확인합니다. 이 위치는 Dataset 메서드를 호출하는 자리가 아닙니다.
+3: extractRows()는 일치하는 모든 행의 인덱스 배열을 반환합니다. arrRow.length는 그 배열의 길이입니다. 일치 행이 없으면 빈 배열이므로 반복문은 실행되지 않습니다.
+4: 이름을 읽는 자리는 getColumn()입니다. setColumn()은 값을 변경하는 메서드입니다.
+
+[완성 코드]
+this.btn_2_3_onclick = function(obj:nexacro.Button, e:nexacro.ClickEventInfo)
+{
+    var sText = "";
+    var arrRow = this.Dataset1.extractRows("DEPT_CODE == 'K10'");
+    for (var i = 0; i < arrRow.length; i++)
+    {
+        var sValue = this.Dataset1.getColumn(arrRow[i], "FULL_NAME");
+        sText += sValue + "\n";
+    }
+    this.txtRtn1.set_value(sText);
+};
+
+
+========================================================================
+(핵심) Q8. 인덱스 배열·문자열 누적·줄바꿈
+추출된 인덱스 배열에서 i번째 원소를 행 인덱스로 사용한다. 이름을 sText 뒤에 차례대로 누적하고, 각 이름 뒤에는 줄바꿈을 넣는다.
+빈칸 【1】 → 【2】 → 【3】에 들어갈 내용의 올바른 조합을 고르시오.
+
+[예시 코드]
+this.btn_2_3_onclick = function(obj:nexacro.Button, e:nexacro.ClickEventInfo)
+{
+    var sText = "";
+    var arrRow = this.Dataset1.extractRows("DEPT_CODE == 'K10'");
+    for (var i = 0; i < arrRow.length; i++)
+    {
+        var sValue = this.Dataset1.getColumn(【1】, "FULL_NAME");
+        sText 【2】 sValue + "【3】";
+    }
+    this.txtRtn1.set_value(sText);
+};
+
+1번 보기
+【1】 i
+【2】 +=
+【3】 \n
+
+2번 보기
+【1】 arrRow[i]
+【2】 =
+【3】 \n
+
+3번 보기
+【1】 arrRow[i]
+【2】 +=
+【3】 \t
+
+4번 보기
+【1】 arrRow[i]
+【2】 +=
+【3】 \n
+
+정답: 4번
+[보기별 해설]
+1: i는 반복 횟수이고, 실제 Dataset 행 인덱스는 추출 배열의 원소 arrRow[i]입니다.
+2: =만 사용하면 이전 이름을 덮어씁니다. 이름을 이어 붙이려면 +=가 필요합니다.
+3: \t는 탭입니다. 한 이름마다 줄바꿈하려면 \n을 사용합니다.
+4: 행 인덱스는 반복 횟수 i가 아니라 arrRow[i]입니다. +=는 기존 문자열 뒤에 덧붙이는 연산입니다. \n은 줄바꿈 문자 표기입니다. 원문에 주석으로 있던 sValue + sText는 이름의 순서를 뒤집을 수 있어 누적과 같지 않습니다.
+
+[완성 코드]
+this.btn_2_3_onclick = function(obj:nexacro.Button, e:nexacro.ClickEventInfo)
+{
+    var sText = "";
+    var arrRow = this.Dataset1.extractRows("DEPT_CODE == 'K10'");
+    for (var i = 0; i < arrRow.length; i++)
+    {
+        var sValue = this.Dataset1.getColumn(arrRow[i], "FULL_NAME");
+        sText += sValue + "\n";
+    }
+    this.txtRtn1.set_value(sText);
+};
+
+
+========================================================================
+(핵심) Q9. 성별 조건부 평균
+남성(M)과 여성(W)의 급여 평균을 각각 구한다. 빈칸은 남성 평균을 계산하는 첫 문장에 있다. 예제의 성별 코드는 M/W이다.
+빈칸 【1】 → 【2】 → 【3】에 들어갈 내용의 올바른 조합을 고르시오.
+
+[예시 코드]
+this.btn_3_1_onclick = function(obj:nexacro.Button, e:nexacro.ClickEventInfo)
+{
+    var nAvgM = this.Dataset1.【1】("【2】", "【3】");
+    var nAvgW = this.Dataset1.getCaseAvg("GENDER == 'W'", "SALARY");
+    var nAvgW1 = this.Dataset1.getCaseAvg("GENDER == 'W'", "SALARY", 0, -1, false);
+    this.txtRtn1.set_value("남성 평균 급여 : " + nexacro.round(nAvgM, 2)
+        + "  여성 평균 급여 : " + nAvgW + "  test 여성 급여 : " + nAvgW1);
+};
+
+1번 보기
+【1】 getCaseAvg
+【2】 GENDER == 'M'
+【3】 SALARY
+
+2번 보기
+【1】 getCaseAvg
+【2】 GENDER == 'W'
+【3】 SALARY
+
+3번 보기
+【1】 getCaseAvg
+【2】 GENDER == 'M'
+【3】 BONUS
+
+4번 보기
+【1】 getAvg
+【2】 GENDER == 'M'
+【3】 SALARY
+
+정답: 1번
+[보기별 해설]
+1: getCaseAvg(조건식, 대상 컬럼)으로 조건부 평균을 구합니다. 남성은 GENDER == 'M', 여성은 GENDER == 'W'를 사용합니다. 성별 코드는 사용자 예제의 M/W를 그대로 사용했습니다.
+2: nAvgM에는 남성(M)의 평균이 들어가야 합니다. 이 조건은 여성(W)을 선택합니다.
+3: 대상은 보너스가 아니라 급여이므로 두 번째 인수는 SALARY입니다.
+4: 이 예제의 인수 구성은 조건식과 대상 컬럼을 받는 getCaseAvg()에 해당합니다. getAvg()와 혼동하면 안 됩니다.
+
+[완성 코드]
+this.btn_3_1_onclick = function(obj:nexacro.Button, e:nexacro.ClickEventInfo)
+{
+    var nAvgM = this.Dataset1.getCaseAvg("GENDER == 'M'", "SALARY");
+    var nAvgW = this.Dataset1.getCaseAvg("GENDER == 'W'", "SALARY");
+    var nAvgW1 = this.Dataset1.getCaseAvg("GENDER == 'W'", "SALARY", 0, -1, false);
+    this.txtRtn1.set_value("남성 평균 급여 : " + nexacro.round(nAvgM, 2)
+        + "  여성 평균 급여 : " + nAvgW + "  test 여성 급여 : " + nAvgW1);
+};
+
+
+========================================================================
+(핵심) Q10. 평균의 범위와 결측값 포함
+여성 급여 평균을 첫 행부터 마지막 행까지 계산하되, 결측값이 있는 대상 행도 평균 계산 개수에 포함한다.
+빈칸 【1】 → 【2】 → 【3】에 들어갈 내용의 올바른 조합을 고르시오.
+
+[예시 코드]
+this.btn_3_1_onclick = function(obj:nexacro.Button, e:nexacro.ClickEventInfo)
+{
+    var nAvgM = this.Dataset1.getCaseAvg("GENDER == 'M'", "SALARY");
+    var nAvgW = this.Dataset1.getCaseAvg("GENDER == 'W'", "SALARY");
+    var nAvgW1 = this.Dataset1.getCaseAvg("GENDER == 'W'", "SALARY", 【1】, 【2】, 【3】);
+    this.txtRtn1.set_value("남성 평균 급여 : " + nexacro.round(nAvgM, 2)
+        + "  여성 평균 급여 : " + nAvgW + "  test 여성 급여 : " + nAvgW1);
+};
+
+1번 보기
+【1】 1
+【2】 -1
+【3】 false
+
+2번 보기
+【1】 0
+【2】 -1
+【3】 false
+
+3번 보기
+【1】 0
+【2】 0
+【3】 false
+
+4번 보기
+【1】 0
+【2】 -1
+【3】 true
+
+정답: 2번
+[보기별 해설]
+1: 시작 인덱스 1은 두 번째 행입니다. 첫 행부터 계산하려면 0이어야 합니다.
+2: 0은 첫 행, 끝 인수 -1은 마지막 행까지, false는 결측값이 있는 조건 일치 행도 평균 분모에 포함한다는 뜻입니다. true 또는 생략 시 결측값은 제외됩니다. 일반 끝 인덱스는 포함하지 않아 0, 5라면 0~4행입니다. 실제 데이터 값을 0으로 덮어쓰는 것은 아닙니다.
+3: 끝 인수 0은 마지막 행까지를 뜻하지 않습니다. 예제에서 끝까지 계산하는 특수값은 -1입니다.
+4: 마지막 true는 결측값을 계산 개수에서 제외합니다. 문제는 해당 행도 개수에 포함하도록 요구합니다.
+
+[완성 코드]
+this.btn_3_1_onclick = function(obj:nexacro.Button, e:nexacro.ClickEventInfo)
+{
+    var nAvgM = this.Dataset1.getCaseAvg("GENDER == 'M'", "SALARY");
+    var nAvgW = this.Dataset1.getCaseAvg("GENDER == 'W'", "SALARY");
+    var nAvgW1 = this.Dataset1.getCaseAvg("GENDER == 'W'", "SALARY", 0, -1, false);
+    this.txtRtn1.set_value("남성 평균 급여 : " + nexacro.round(nAvgM, 2)
+        + "  여성 평균 급여 : " + nAvgW + "  test 여성 급여 : " + nAvgW1);
+};
+
+
+========================================================================
+(핵심) Q11. 소수 둘째 자리까지 반올림
+남성 평균 급여 nAvgM을 소수 둘째 자리까지 반올림해 표시한다. 앞서 보완한 자릿수 지정 반올림 함수를 사용한다.
+빈칸 【1】 → 【2】 → 【3】에 들어갈 내용의 올바른 조합을 고르시오.
+
+[예시 코드]
+this.btn_3_1_onclick = function(obj:nexacro.Button, e:nexacro.ClickEventInfo)
+{
+    var nAvgM = this.Dataset1.getCaseAvg("GENDER == 'M'", "SALARY");
+    var nAvgW = this.Dataset1.getCaseAvg("GENDER == 'W'", "SALARY");
+    var nAvgW1 = this.Dataset1.getCaseAvg("GENDER == 'W'", "SALARY", 0, -1, false);
+    this.txtRtn1.set_value("남성 평균 급여 : " + 【1】(【2】, 【3】)
+        + "  여성 평균 급여 : " + nAvgW + "  test 여성 급여 : " + nAvgW1);
+};
+
+1번 보기
+【1】 Math.round
+【2】 nAvgM
+【3】 2
+
+2번 보기
+【1】 nexacro.round
+【2】 nAvgW
+【3】 2
+
+3번 보기
+【1】 nexacro.round
+【2】 nAvgM
+【3】 2
+
+4번 보기
+【1】 nexacro.round
+【2】 nAvgM
+【3】 0
+
+정답: 3번
+[보기별 해설]
+1: 앞서 보완한 예제에서는 자릿수 지정 반올림에 nexacro.round()를 사용합니다. Math.round()의 두 번째 인수로 소수 자릿수를 정하지 않습니다.
+2: 반올림할 값은 남성 평균 nAvgM입니다. nAvgW는 여성 평균 변수입니다.
+3: 자릿수 지정 반올림은 nexacro.round(nAvgM, 2)입니다. 원문의 Math.round(nAvgM, 2)는 표준 Math.round()에서 소수 자릿수 지정이 되지 않으므로 보완했습니다. 반환값은 숫자이며 항상 소수점 두 자리를 문자열로 표시하는 기능은 아닙니다.
+4: 자릿수 0은 정수 자리 반올림입니다. 소수 둘째 자리까지 남기는 인수는 2입니다.
+
+[완성 코드]
+this.btn_3_1_onclick = function(obj:nexacro.Button, e:nexacro.ClickEventInfo)
+{
+    var nAvgM = this.Dataset1.getCaseAvg("GENDER == 'M'", "SALARY");
+    var nAvgW = this.Dataset1.getCaseAvg("GENDER == 'W'", "SALARY");
+    var nAvgW1 = this.Dataset1.getCaseAvg("GENDER == 'W'", "SALARY", 0, -1, false);
+    this.txtRtn1.set_value("남성 평균 급여 : " + nexacro.round(nAvgM, 2)
+        + "  여성 평균 급여 : " + nAvgW + "  test 여성 급여 : " + nAvgW1);
+};
+
+
+========================================================================
+(핵심) Q12. 급여와 보너스 합계의 평균
+각 행의 SALARY와 BONUS를 더한 결과들의 평균을 구한다.
+빈칸 【1】 → 【2】 → 【3】에 들어갈 내용의 올바른 조합을 고르시오.
+
+[예시 코드]
+this.btn_3_2_onclick = function(obj:nexacro.Button, e:nexacro.ClickEventInfo)
+{
+    var nAvg = this.Dataset1.【1】("【2】 + 【3】");
+    this.txtRtn1.set_value("보너스 + 급여의 평균 데이터 : " + nAvg);
+};
+
+1번 보기
+【1】 getCaseAvg
+【2】 SALARY
+【3】 BONUS
+
+2번 보기
+【1】 getAvg
+【2】 SALARY
+【3】 SALARY
+
+3번 보기
+【1】 getAvg
+【2】 BONUS
+【3】 BONUS
+
+4번 보기
+【1】 getAvg
+【2】 SALARY
+【3】 BONUS
+
+정답: 4번
+[보기별 해설]
+1: 이 호출은 조건식 없이 계산식 하나를 받습니다. 계산식 평균은 getAvg()로 구합니다.
+2: 급여를 두 번 더하는 식이 됩니다. 요구한 식은 SALARY + BONUS입니다.
+3: 보너스를 두 번 더하는 식이 됩니다. 요구한 식은 SALARY + BONUS입니다.
+4: getAvg("SALARY + BONUS")는 각 행에 수식을 적용한 다음 그 결과의 평균을 계산합니다. 특정 조건이 필요한 getCaseAvg()와 구분합니다.
+
+[완성 코드]
+this.btn_3_2_onclick = function(obj:nexacro.Button, e:nexacro.ClickEventInfo)
+{
+    var nAvg = this.Dataset1.getAvg("SALARY + BONUS");
+    this.txtRtn1.set_value("보너스 + 급여의 평균 데이터 : " + nAvg);
+};
+
+
+========================================================================
+(핵심) Q13. 입사일 내림차순 정렬
+HIRE_DATE 기준으로 내림차순 정렬한다. 보기는 메서드 이름 → 정렬 문자 → 내림차순 부호 순서이다.
+빈칸 【1】 → 【2】 → 【3】에 들어갈 내용의 올바른 조합을 고르시오.
+
+[예시 코드]
+this.btn_3_3_onclick = function(obj:nexacro.Button, e:nexacro.ClickEventInfo)
+{
+    this.Dataset1.【1】("【2】:【3】HIRE_DATE");
+};
+
+1번 보기
+【1】 set_keystring
+【2】 S
+【3】 -
+
+2번 보기
+【1】 set_keystring
+【2】 S
+【3】 +
+
+3번 보기
+【1】 set_keystring
+【2】 -S
+【3】 (부호 없음)
+
+4번 보기
+【1】 filter
+【2】 S
+【3】 -
+
+정답: 1번
+[보기별 해설]
+1: 올바른 keystring은 "S:-HIRE_DATE"입니다. 원문의 "-S:HIRE_DATE"를 수정했습니다. S는 정렬, 컬럼 앞 -는 내림차순입니다. 오름차순은 "S:+HIRE_DATE" 또는 "S:HIRE_DATE"입니다.
+2: 컬럼 앞의 +는 오름차순입니다. 내림차순은 -입니다.
+3: 이 조합은 원문에서 수정한 -S:HIRE_DATE가 됩니다. -는 S 앞이 아니라 컬럼 앞에 둡니다.
+4: filter()는 표시 조건을 설정하는 메서드입니다. 정렬 keystring을 설정하는 set_keystring()이 필요합니다.
+
+[완성 코드]
+this.btn_3_3_onclick = function(obj:nexacro.Button, e:nexacro.ClickEventInfo)
+{
+    this.Dataset1.set_keystring("S:-HIRE_DATE");
+};
+
+
+========================================================================
+(핵심) Q14. 맨 앞에 새 행 삽입 후 상태 확인
+기존 행이 있는 Dataset4의 맨 앞에 새 행을 삽입하고, 반환된 인덱스로 그 행의 상태를 확인한다. 삽입은 성공하며 updatecontrol=true이다.
+빈칸 【1】 → 【2】 → 【3】에 들어갈 내용의 올바른 조합을 고르시오.
+
+[예시 코드]
+this.btn_4_1_onclick = function(obj:nexacro.Button, e:nexacro.ClickEventInfo)
+{
+    var nRow = this.Dataset4.【1】(【2】);
+    var nType = this.Dataset4.【3】(nRow);
+    this.txtRtn2.set_value("Insert RowType : " + nType);
+};
+
+1번 보기
+【1】 insertRow
+【2】 1
+【3】 getRowType
+
+2번 보기
+【1】 insertRow
+【2】 0
+【3】 getRowType
+
+3번 보기
+【1】 addRow
+【2】 0
+【3】 getRowType
+
+4번 보기
+【1】 insertRow
+【2】 0
+【3】 getRowCount
+
+정답: 2번
+[보기별 해설]
+1: 1은 두 번째 위치입니다. 맨 앞 삽입은 insertRow(0)입니다.
+2: insertRow(0)는 첫 위치에 행을 삽입하고 새 행 인덱스를 반환합니다. updatecontrol=true이며 삽입에 성공하면 getRowType(nRow)는 INSERT(2)입니다. NORMAL은 1, UPDATE는 4입니다.
+3: 예제는 위치를 지정하는 insertRow(0)를 사용합니다. addRow()와 위치 지정 삽입은 구분해야 합니다.
+4: 삽입한 개별 행의 상태를 읽어야 합니다. getRowCount()는 현재 행 개수입니다.
+
+[완성 코드]
+this.btn_4_1_onclick = function(obj:nexacro.Button, e:nexacro.ClickEventInfo)
+{
+    var nRow = this.Dataset4.insertRow(0);
+    var nType = this.Dataset4.getRowType(nRow);
+    this.txtRtn2.set_value("Insert RowType : " + nType);
+};
+
+
+========================================================================
+(핵심) Q15. 기존 행의 이름 수정
+Dataset4의 인덱스 1인 행에서 FULL_NAME을 Nexacro로 변경한다. 해당 행은 NORMAL이고 원래 이름은 다른 값이며 updatecontrol=true이다.
+빈칸 【1】 → 【2】 → 【3】에 들어갈 내용의 올바른 조합을 고르시오.
+
+[예시 코드]
+this.btn_4_2_onclick = function(obj:nexacro.Button, e:nexacro.ClickEventInfo)
+{
+    this.Dataset4.【1】(1, "【2】", "【3】");
+    var nType = this.Dataset4.getRowType(1);
+    this.txtRtn2.set_value("Update RowType : " + nType);
+};
+
+1번 보기
+【1】 getColumn
+【2】 FULL_NAME
+【3】 Nexacro
+
+2번 보기
+【1】 setColumn
+【2】 EMPL_ID
+【3】 Nexacro
+
+3번 보기
+【1】 setColumn
+【2】 FULL_NAME
+【3】 Nexacro
+
+4번 보기
+【1】 setColumn
+【2】 FULL_NAME
+【3】 nexacro
+
+정답: 3번
+[보기별 해설]
+1: getColumn()은 조회 메서드입니다. 값을 변경하려면 setColumn()을 호출해야 합니다.
+2: 변경 대상은 사번 컬럼이 아니라 이름 컬럼 FULL_NAME입니다.
+3: setColumn(1, "FULL_NAME", "Nexacro")로 두 번째 행의 값을 바꿉니다. 지정한 조건에서는 getRowType(1)이 UPDATE(4)입니다. 새로 삽입한 INSERT 행의 값을 수정했다고 반드시 UPDATE로 바뀌는 것은 아닙니다.
+4: 문제에 지정된 값은 대문자 N으로 시작하는 Nexacro입니다. 문자열값의 대소문자가 다릅니다.
+
+[완성 코드]
+this.btn_4_2_onclick = function(obj:nexacro.Button, e:nexacro.ClickEventInfo)
+{
+    this.Dataset4.setColumn(1, "FULL_NAME", "Nexacro");
+    var nType = this.Dataset4.getRowType(1);
+    this.txtRtn2.set_value("Update RowType : " + nType);
+};
+
+
+========================================================================
+(핵심) Q16. 현재값과 원본값 비교
+기존 행의 수정 후 현재 이름과 변경 전 기준 원본 이름을 각각 조회한다. 인덱스 1은 원본이 있는 기존 행이다.
+빈칸 【1】 → 【2】 → 【3】에 들어갈 내용의 올바른 조합을 고르시오.
+
+[예시 코드]
+this.btn_4_3_onclick = function(obj:nexacro.Button, e:nexacro.ClickEventInfo)
+{
+    var sCurData = this.Dataset4.【1】(1, "FULL_NAME");
+    var sOrgData = this.Dataset4.【2】(1, "【3】");
+    this.txtRtn2.set_value("sCurData : " + sCurData + "   sOrgData : " + sOrgData);
+};
+
+1번 보기
+【1】 getOrgColumn
+【2】 getColumn
+【3】 FULL_NAME
+
+2번 보기
+【1】 getColumn
+【2】 getColumn
+【3】 FULL_NAME
+
+3번 보기
+【1】 getColumn
+【2】 getOrgColumn
+【3】 EMPL_ID
+
+4번 보기
+【1】 getColumn
+【2】 getOrgColumn
+【3】 FULL_NAME
+
+정답: 4번
+[보기별 해설]
+1: 현재값과 원본값을 조회하는 메서드 순서가 반대입니다.
+2: 두 변수에 모두 현재값을 읽게 됩니다. 두 번째는 getOrgColumn()이어야 합니다.
+3: 비교할 원본값도 이름 컬럼 FULL_NAME에서 읽어야 합니다. 사번 컬럼을 읽는 선택지는 요구와 다릅니다.
+4: getColumn()은 현재값, getOrgColumn()은 변경 전 기준 원본값입니다. 여기서 원본은 곧바로 이전에 setColumn()했던 값 하나를 뜻하지 않습니다. 새로 삽입한 행에는 기존 원본 행이 없다는 점도 구분합니다.
+
+[완성 코드]
+this.btn_4_3_onclick = function(obj:nexacro.Button, e:nexacro.ClickEventInfo)
+{
+    var sCurData = this.Dataset4.getColumn(1, "FULL_NAME");
+    var sOrgData = this.Dataset4.getOrgColumn(1, "FULL_NAME");
+    this.txtRtn2.set_value("sCurData : " + sCurData + "   sOrgData : " + sOrgData);
+};
+
+
+========================================================================
+(핵심) Q17. 여러 행 삭제와 삭제 정보 조회
+인덱스 3·4·5의 기존 행을 삭제하고, 삭제 목록의 개수와 0번 항목의 이름을 읽는다. 세 행이 존재하며 삭제 정보가 보관되는 기본 상태이다.
+빈칸 【1】 → 【2】 → 【3】에 들어갈 내용의 올바른 조합을 고르시오.
+
+[예시 코드]
+this.btn_4_4_onclick = function(obj:nexacro.Button, e:nexacro.ClickEventInfo)
+{
+    var arrRow = [3, 4, 5];
+    this.Dataset4.【1】(arrRow);
+    var nDelCnt = this.Dataset4.【2】();
+    var sDelData = this.Dataset4.【3】(0, "FULL_NAME");
+    this.txtRtn2.set_value("Del Count = " + nDelCnt + "  Del Data = " + sDelData);
+};
+
+1번 보기
+【1】 deleteMultiRows
+【2】 getDeletedRowCount
+【3】 getDeletedColumn
+
+2번 보기
+【1】 deleteMultiRows
+【2】 getRowCount
+【3】 getDeletedColumn
+
+3번 보기
+【1】 deleteMultiRows
+【2】 getDeletedRowCount
+【3】 getColumn
+
+4번 보기
+【1】 extractRows
+【2】 getDeletedRowCount
+【3】 getDeletedColumn
+
+정답: 1번
+[보기별 해설]
+1: deleteMultiRows()에 삭제 대상 인덱스 배열을 전달합니다. getDeletedRowCount()는 보관된 삭제 행 수, getDeletedColumn()은 삭제 목록의 값을 읽습니다. 신규 INSERT 행을 확정 전 삭제한 것은 일반적으로 삭제 목록에 남지 않으므로 기존 행 삭제와 구분해야 합니다.
+2: 삭제 목록의 개수를 구하는 자리에 현재 행 개수 조회가 들어갔습니다. getDeletedRowCount()가 필요합니다.
+3: 삭제 목록의 값은 getDeletedColumn()으로 조회합니다. getColumn()은 현재 Dataset 행을 조회합니다.
+4: extractRows()는 조건에 맞는 인덱스 배열 조회이며, 전달한 행들을 삭제하는 메서드가 아닙니다.
+
+[완성 코드]
+this.btn_4_4_onclick = function(obj:nexacro.Button, e:nexacro.ClickEventInfo)
+{
+    var arrRow = [3, 4, 5];
+    this.Dataset4.deleteMultiRows(arrRow);
+    var nDelCnt = this.Dataset4.getDeletedRowCount();
+    var sDelData = this.Dataset4.getDeletedColumn(0, "FULL_NAME");
+    this.txtRtn2.set_value("Del Count = " + nDelCnt + "  Del Data = " + sDelData);
+};
+
+
+========================================================================
+(핵심) Q18. 삭제 인덱스와 삭제 목록 인덱스
+현재 행 인덱스 3·4·5를 삭제하고, 삭제 목록의 인덱스 0에서 FULL_NAME을 조회한다. 배열의 대괄호는 코드에 이미 있다.
+빈칸 【1】 → 【2】 → 【3】에 들어갈 내용의 올바른 조합을 고르시오.
+
+[예시 코드]
+this.btn_4_4_onclick = function(obj:nexacro.Button, e:nexacro.ClickEventInfo)
+{
+    var arrRow = [【1】];
+    this.Dataset4.deleteMultiRows(arrRow);
+    var nDelCnt = this.Dataset4.getDeletedRowCount();
+    var sDelData = this.Dataset4.getDeletedColumn(【2】, "【3】");
+    this.txtRtn2.set_value("Del Count = " + nDelCnt + "  Del Data = " + sDelData);
+};
+
+1번 보기
+【1】 2, 3, 4
+【2】 0
+【3】 FULL_NAME
+
+2번 보기
+【1】 3, 4, 5
+【2】 0
+【3】 FULL_NAME
+
+3번 보기
+【1】 3, 4, 5
+【2】 1
+【3】 FULL_NAME
+
+4번 보기
+【1】 3, 4, 5
+【2】 0
+【3】 EMPL_ID
+
+정답: 2번
+[보기별 해설]
+1: 문제에서 지정한 현재 행 인덱스는 3·4·5입니다. 인덱스를 1씩 줄이면 다른 행을 삭제합니다.
+2: 인덱스 3·4·5는 네 번째·다섯 번째·여섯 번째 행입니다. getDeletedColumn(0, "FULL_NAME")의 0은 삭제 목록 내부 인덱스로, 항상 가장 최근에 삭제한 행을 뜻하지 않습니다.
+3: 요구한 삭제 목록 인덱스는 0입니다. 1은 삭제 목록의 두 번째 항목입니다.
+4: 조회할 삭제 데이터는 이름 FULL_NAME입니다. EMPL_ID는 사번입니다.
+
+[완성 코드]
+this.btn_4_4_onclick = function(obj:nexacro.Button, e:nexacro.ClickEventInfo)
+{
+    var arrRow = [3, 4, 5];
+    this.Dataset4.deleteMultiRows(arrRow);
+    var nDelCnt = this.Dataset4.getDeletedRowCount();
+    var sDelData = this.Dataset4.getDeletedColumn(0, "FULL_NAME");
+    this.txtRtn2.set_value("Del Count = " + nDelCnt + "  Del Data = " + sDelData);
+};
+
+
+========================================================================
+(핵심) Q19. Dataset 전체 복사와 Grid 포맷 생성
+Dataset4의 데이터를 Dataset5에 복사하고 Grid5 포맷을 생성한다. Grid5는 이미 Dataset5에 바인딩되어 있다.
+빈칸 【1】 → 【2】 → 【3】에 들어갈 내용의 올바른 조합을 고르시오.
+
+[예시 코드]
+this.btn_5_1_onclick = function(obj:nexacro.Button, e:nexacro.ClickEventInfo)
+{
+    this.Dataset5.【1】(this.【2】);
+    this.Grid5.【3】();
+    this.Grid5.setRealRowSize(-1, 32);
+    this.Grid5.setRealRowSize(0, 32);
+};
+
+1번 보기
+【1】 copyRow
+【2】 Dataset4
+【3】 createFormat
+
+2번 보기
+【1】 copyData
+【2】 Dataset5
+【3】 createFormat
+
+3번 보기
+【1】 copyData
+【2】 Dataset4
+【3】 createFormat
+
+4번 보기
+【1】 copyData
+【2】 Dataset4
+【3】 setRealRowSize
+
+정답: 3번
+[보기별 해설]
+1: 이 위치는 Dataset 전체 데이터를 복사하는 copyData()입니다. copyRow()는 대상행·원본객체·원본행 인수가 필요합니다.
+2: 요구한 복사 원본은 Dataset4입니다. Dataset5를 인수로 쓰면 원본 지정이 달라집니다.
+3: Dataset5.copyData(Dataset4)는 데이터 자체를 대상 Dataset5에 복사합니다. createFormat()은 바인딩된 Dataset을 기준으로 Grid 표시 포맷을 만듭니다. 이미 적절한 Grid 포맷이 있으면 복사만을 위해 매번 생성할 필요는 없습니다.
+4: 인수 없이 Grid 포맷을 생성하는 자리는 createFormat()입니다. setRealRowSize()는 행 높이 설정입니다.
+
+[완성 코드]
+this.btn_5_1_onclick = function(obj:nexacro.Button, e:nexacro.ClickEventInfo)
+{
+    this.Dataset5.copyData(this.Dataset4);
+    this.Grid5.createFormat();
+    this.Grid5.setRealRowSize(-1, 32);
+    this.Grid5.setRealRowSize(0, 32);
+};
+
+
+========================================================================
+(핵심) Q20. Grid 헤더와 본문 행 높이
+첫 번째 높이 설정 호출에서 Head를, 두 번째 높이 설정 호출에서 Body 0번 행을 지정하여 각각 32px로 설정한다. 뒤쪽 선택 인수는 생략한다.
+빈칸 【1】 → 【2】 → 【3】에 들어갈 내용의 올바른 조합을 고르시오.
+
+[예시 코드]
+this.btn_5_1_onclick = function(obj:nexacro.Button, e:nexacro.ClickEventInfo)
+{
+    this.Dataset5.copyData(this.Dataset4);
+    this.Grid5.createFormat();
+    this.Grid5.【1】(【2】, 32);
+    this.Grid5.setRealRowSize(【3】, 32);
+};
+
+1번 보기
+【1】 setRealRowSize
+【2】 0
+【3】 -1
+
+2번 보기
+【1】 createFormat
+【2】 -1
+【3】 0
+
+3번 보기
+【1】 setRealRowSize
+【2】 -1
+【3】 1
+
+4번 보기
+【1】 setRealRowSize
+【2】 -1
+【3】 0
+
+정답: 4번
+[보기별 해설]
+1: Head 지정값 -1과 Body 첫 행 인덱스 0의 순서가 바뀌었습니다.
+2: createFormat()은 포맷 생성입니다. 행 위치와 높이로 크기를 지정하는 메서드는 setRealRowSize()입니다.
+3: Body의 첫 행 인덱스는 0입니다. 1은 두 번째 행을 지정합니다.
+4: Grid.setRealRowSize()의 기본 bBody=true에서 -1은 Head, 0은 첫 Body 행입니다. 높이 단위는 px입니다. extendsizetype="none"이면 Body의 높이 변경이 모든 Body 행에 적용됩니다. Dataset의 메서드가 아닙니다.
+
+[완성 코드]
+this.btn_5_1_onclick = function(obj:nexacro.Button, e:nexacro.ClickEventInfo)
+{
+    this.Dataset5.copyData(this.Dataset4);
+    this.Grid5.createFormat();
+    this.Grid5.setRealRowSize(-1, 32);
+    this.Grid5.setRealRowSize(0, 32);
+};
+
+
+========================================================================
+(핵심) Q21. 복사 대상과 원본 객체 구분
+Dataset4에서 Dataset5로 데이터를 복사하고 Grid5에서 포맷을 만든다. Grid5는 Dataset5에 바인딩되어 있다.
+빈칸 【1】 → 【2】 → 【3】에 들어갈 내용의 올바른 조합을 고르시오.
+
+[예시 코드]
+this.btn_5_1_onclick = function(obj:nexacro.Button, e:nexacro.ClickEventInfo)
+{
+    this.【1】.copyData(this.【2】);
+    this.【3】.createFormat();
+    this.Grid5.setRealRowSize(-1, 32);
+    this.Grid5.setRealRowSize(0, 32);
+};
+
+1번 보기
+【1】 Dataset5
+【2】 Dataset4
+【3】 Grid5
+
+2번 보기
+【1】 Dataset4
+【2】 Dataset5
+【3】 Grid5
+
+3번 보기
+【1】 Dataset5
+【2】 Dataset4
+【3】 Dataset5
+
+4번 보기
+【1】 Grid5
+【2】 Dataset4
+【3】 Grid5
+
+정답: 1번
+[보기별 해설]
+1: copyData()를 호출하는 객체는 복사 대상 Dataset5이고, 인수는 원본 Dataset4입니다. createFormat()을 호출하는 객체는 Grid5입니다. copyData()의 복사 행은 NORMAL이며 원본의 삭제 목록은 복사되지 않습니다.
+2: 복사 방향이 반대입니다. 대상 Dataset5에서 copyData(this.Dataset4)를 호출해야 합니다.
+3: createFormat()의 호출 대상은 Dataset이 아니라 Grid5입니다.
+4: copyData()의 호출 대상은 Grid가 아닌 복사 대상 Dataset5입니다.
+
+[완성 코드]
+this.btn_5_1_onclick = function(obj:nexacro.Button, e:nexacro.ClickEventInfo)
+{
+    this.Dataset5.copyData(this.Dataset4);
+    this.Grid5.createFormat();
+    this.Grid5.setRealRowSize(-1, 32);
+    this.Grid5.setRealRowSize(0, 32);
+};
+
+
+========================================================================
+(핵심) Q22. 사원 한 행만 찾아 새 행으로 복사
+Dataset4에서 KR040 사원을 찾고, Dataset5에 새 행을 만든 뒤 해당 사원만 복사한다. 원본 사원은 존재하고 두 Dataset의 컬럼 구성은 같다.
+빈칸 【1】 → 【2】 → 【3】에 들어갈 내용의 올바른 조합을 고르시오.
+
+[예시 코드]
+this.btn_5_2_onclick = function(obj:nexacro.Button, e:nexacro.ClickEventInfo)
+{
+    var nFromRow = this.Dataset4.【1】("EMPL_ID", "KR040");
+    var nToRow = this.Dataset5.【2】();
+    this.Dataset5.【3】(nToRow, this.Dataset4, nFromRow);
+};
+
+1번 보기
+【1】 findRowExpr
+【2】 addRow
+【3】 copyRow
+
+2번 보기
+【1】 findRow
+【2】 addRow
+【3】 copyRow
+
+3번 보기
+【1】 findRow
+【2】 getRowCount
+【3】 copyRow
+
+4번 보기
+【1】 findRow
+【2】 addRow
+【3】 copyData
+
+정답: 2번
+[보기별 해설]
+1: 예제의 첫 호출은 컬럼 ID와 검색값을 받으므로 findRow()가 필요합니다. findRowExpr()의 조건식 인수와 구분하세요.
+2: findRow()로 원본 행 인덱스를 얻고, addRow()로 대상 Dataset의 새 행 인덱스를 얻은 뒤 copyRow()로 값을 복사합니다. copyRow() 자체는 새 행을 만들어 주지 않습니다. 실제 코드에서는 검색 실패 여부를 먼저 확인하는 것이 필요합니다.
+3: getRowCount()는 행 개수 조회일 뿐 새 행을 만들지 않습니다. 복사할 대상 행은 addRow()로 만듭니다.
+4: 요구한 것은 지정한 한 행 복사입니다. 대상행·원본객체·원본행을 받는 copyRow()를 사용해야 합니다.
+
+[완성 코드]
+this.btn_5_2_onclick = function(obj:nexacro.Button, e:nexacro.ClickEventInfo)
+{
+    var nFromRow = this.Dataset4.findRow("EMPL_ID", "KR040");
+    var nToRow = this.Dataset5.addRow();
+    this.Dataset5.copyRow(nToRow, this.Dataset4, nFromRow);
+};
+
+
+========================================================================
+(핵심) Q23. copyRow의 세 인수 순서
+대상 Dataset5의 새 행 nToRow에 Dataset4의 nFromRow를 복사한다. copyRow()에 전달할 세 인수의 순서를 확인한다.
+빈칸 【1】 → 【2】 → 【3】에 들어갈 내용의 올바른 조합을 고르시오.
+
+[예시 코드]
+this.btn_5_2_onclick = function(obj:nexacro.Button, e:nexacro.ClickEventInfo)
+{
+    var nFromRow = this.Dataset4.findRow("EMPL_ID", "KR040");
+    var nToRow = this.Dataset5.addRow();
+    this.Dataset5.copyRow(【1】, 【2】, 【3】);
+};
+
+1번 보기
+【1】 nFromRow
+【2】 this.Dataset4
+【3】 nToRow
+
+2번 보기
+【1】 nToRow
+【2】 this.Dataset5
+【3】 nFromRow
+
+3번 보기
+【1】 nToRow
+【2】 this.Dataset4
+【3】 nFromRow
+
+4번 보기
+【1】 nToRow
+【2】 "Dataset4"
+【3】 nFromRow
+
+정답: 3번
+[보기별 해설]
+1: 첫 인수는 대상 행 nToRow, 세 번째는 원본 행 nFromRow입니다. 두 인덱스가 뒤바뀌었습니다.
+2: 원본 Dataset 객체는 this.Dataset4입니다. Dataset5는 복사 대상입니다.
+3: 형식은 대상Dataset.copyRow(대상행, 원본Dataset객체, 원본행)입니다. 원본 Dataset은 ID 문자열이 아니라 this.Dataset4 객체입니다. 컬럼 매핑을 생략하면 같은 컬럼 ID의 값을 복사합니다.
+4: 두 번째 인수는 ID 문자열이 아니라 원본 Dataset 객체 this.Dataset4여야 합니다.
+
+[완성 코드]
+this.btn_5_2_onclick = function(obj:nexacro.Button, e:nexacro.ClickEventInfo)
+{
+    var nFromRow = this.Dataset4.findRow("EMPL_ID", "KR040");
+    var nToRow = this.Dataset5.addRow();
+    this.Dataset5.copyRow(nToRow, this.Dataset4, nFromRow);
+};
+
+
+========================================================================
+(보충) Q24. Grid 컬럼 너비 자동 맞춤
+Grid1 너비에 맞게 컬럼 영역을 자동 조절하는 코드로 올바른 것은?
+
+1번 보기
+this.Grid1.set_autofittype("col");
+
+2번 보기
+this.Dataset1.set_autofittype("col");
+
+3번 보기
+this.Grid1.set_autofittype("row");
+
+4번 보기
+this.Grid1.getColCount();
+
+정답: 1번
+[보기별 해설]
+1: Grid의 autofittype을 col로 설정합니다. 고정 컬럼 등은 자동 조절 대상에서 제외될 수 있습니다.
+2: 화면의 컬럼 너비 조절은 Dataset이 아니라 Grid의 속성입니다.
+3: row는 컬럼 너비를 맞추는 설정값이 아닙니다.
+4: Dataset 컬럼 수 조회와 Grid 컬럼 자동 너비는 다른 기능입니다.
+
+
+========================================================================
+(보충) Q25. 조건 필터 적용
+Dataset1에서 급여가 6000보다 큰 행만 표시하고, 나머지 행은 삭제하지 않는 코드는?
+
+1번 보기
+this.Dataset1.findRowExpr("SALARY > 6000");
+
+2번 보기
+this.Dataset1.filter("SALARY > 6000");
+
+3번 보기
+this.Dataset1.extractRows("SALARY > 6000");
+
+4번 보기
+this.Dataset1.deleteMultiRows([0, 1]);
+
+정답: 2번
+[보기별 해설]
+1: 첫 일치 행의 인덱스 조회이며 표시 행을 제한하지 않습니다.
+2: filter()는 조건에 맞는 행만 표시하고 숨긴 행을 삭제하지 않습니다.
+3: 인덱스 배열만 반환하며 필터를 적용하지 않습니다.
+4: 행을 실제로 삭제하는 동작이므로 요구와 다릅니다.
+
+
+========================================================================
+(보충) Q26. 필터 적용 행 수와 전체 행 수
+삭제되지 않은 행은 총 10개이고 필터 후 표시되는 행은 4개이다. getRowCount()와 getRowCountNF() 결과 순서로 맞는 것은?
+
+1번 보기
+10, 4
+
+2번 보기
+4, 4
+
+3번 보기
+4, 10
+
+4번 보기
+10, 10
+
+정답: 3번
+[보기별 해설]
+1: 순서가 반대입니다. getRowCount()는 표시 대상 4행입니다.
+2: NF는 필터로 숨긴 행을 포함합니다.
+3: 현재 표시 행 수 4, 필터에 관계없는 현재 행 수 10입니다. 삭제 목록은 둘 다 포함하지 않습니다.
+4: getRowCount()에는 숨긴 행을 포함하지 않습니다.
+
+
+========================================================================
+(보충) Q27. 필터 해제
+이미 적용한 Dataset1의 필터를 해제하여 삭제되지 않은 행을 다시 모두 표시하는 코드는?
+
+1번 보기
+this.Dataset1.set_keystring("");
+
+2번 보기
+this.Dataset1.getRowCountNF();
+
+3번 보기
+this.Dataset1.filter("false");
+
+4번 보기
+this.Dataset1.filter("");
+
+정답: 4번
+[보기별 해설]
+1: 정렬·그룹 키 설정을 비우는 것이며 filterstr을 해제하는 호출이 아닙니다.
+2: 필터에 관계없는 행 수를 조회할 뿐, 필터를 해제하지 않습니다.
+3: 항상 거짓인 조건이므로 행이 표시되지 않습니다.
+4: 빈 문자열 조건으로 필터를 해제합니다. 데이터 복원이나 삭제 취소가 아니라 숨김 조건 해제입니다.
+
+
+========================================================================
+(보충) Q28. Grid와 Dataset 바인딩
+Grid5에 Dataset5를 ID 문자열로 연결하는 코드로 올바른 것은?
+
+1번 보기
+this.Grid5.set_binddataset("Dataset5");
+
+2번 보기
+this.Dataset5.set_binddataset("Grid5");
+
+3번 보기
+this.Grid5.copyData(this.Dataset5);
+
+4번 보기
+this.Dataset5.createFormat();
+
+정답: 1번
+[보기별 해설]
+1: Grid의 binddataset 속성에 Dataset ID를 설정합니다. 이 작업은 예제 btn_5_1에서 이미 되어 있다고 가정했습니다.
+2: 바인딩 속성의 설정 대상은 Grid입니다.
+3: copyData()는 Dataset 간 데이터 복사 메서드입니다.
+4: createFormat()은 Grid의 포맷 생성 메서드입니다.
+
+
+========================================================================
+(보충) Q29. 정수 반올림과 백 단위 반올림
+Math.round(12.346)과 nexacro.round(1234.56, -2)의 결과를 순서대로 고르면?
+
+1번 보기
+12.35, 1234.56
+
+2번 보기
+12, 1200
+
+3번 보기
+12, 1234.56
+
+4번 보기
+13, 1200
+
+정답: 2번
+[보기별 해설]
+1: 표준 Math.round()는 지정 소수 자릿수 반올림이 아닌 정수 반올림입니다.
+2: 각각 가장 가까운 정수 12와 백 단위 반올림 1200입니다.
+3: nexacro.round()의 자릿수 -2는 백 단위 반올림입니다.
+4: 12.346을 가장 가까운 정수로 반올림하면 12입니다.
+
+
+========================================================================
+(보충) Q30. Expr 이름과 조건식 지원
+문자열 조건식과 관련된 설명 중 올바른 것은?
+
+1번 보기
+이름이 Expr로 끝나는 메서드만 조건식을 받을 수 있다.
+
+2번 보기
+findRowExpr()와 extractRows()는 모두 인덱스 배열을 반환한다.
+
+3번 보기
+filter(), extractRows(), getCaseAvg()도 문자열 조건식을 받을 수 있다.
+
+4번 보기
+조건식 안에 쓰는 컬럼 ID는 작은따옴표로 감싸야만 값으로 해석된다.
+
+정답: 3번
+[보기별 해설]
+1: Expr라는 이름이 없어도 조건식을 지원하는 메서드가 있습니다.
+2: findRowExpr()는 첫 인덱스 하나, extractRows()는 인덱스 배열을 반환합니다.
+3: 이 세 메서드도 조건식을 받으며 각각 표시 필터·인덱스 배열·조건부 평균 기능입니다.
+4: DEPT_CODE == 'K10'처럼 컬럼 ID는 표현식에서 직접 참조하고 비교할 문자열값에 따옴표를 씁니다.
+

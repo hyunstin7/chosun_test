@@ -1,0 +1,120 @@
+사용자가 제공한 이벤트 코드의 보완본
+
+변경: Datatset1 → Dataset1(프로젝트에 실제 존재하는 ID가 Dataset1이라는 전제),
+Math.round(nAvgM, 2) → nexacro.round(nAvgM, 2),
+"-S:HIRE_DATE" → "S:-HIRE_DATE".
+코드의 기능·Dataset ID·컬럼명은 위 보완 사항 외에는 사용자 예제를 기준으로 유지했습니다.
+텍스트의 개수 표기와 들여쓰기를 정리하고, 채점 정답이 노출되는 주석은 문제 코드에서 뺐습니다.
+검색 예제는 일치 행이 존재한다는 조건, 삭제 예제는 기존 행이 존재한다는 조건,
+Grid5는 Dataset5에 이미 바인딩되어 있다는 조건으로 출제했습니다.
+실제 프로젝트에서는 검색 -1 여부와 행 존재 여부를 확인해야 합니다.
+obj:nexacro.Button 등의 매개변수 표기는 넥사크로 이벤트 스크립트 표기이며 일반 브라우저 JavaScript로 직접 실행하는 파일이 아닙니다.
+
+this.btn_1_1_onclick = function(obj:nexacro.Button, e:nexacro.ClickEventInfo)
+{
+    var nColCount = this.Dataset1.getColCount();
+    var nRowCount = this.Dataset1.getRowCount();
+    this.txtRtn1.set_value("컬럼 개수 : " + nColCount + " Row(데이터) 개수 : " + nRowCount);
+    for (var i = 0; i < nColCount; i++)
+    {
+        var sColID = this.Dataset1.getColID(i);
+        trace("col ID = " + sColID);
+    }
+};
+
+this.btn_1_2_onclick = function(obj:nexacro.Button, e:nexacro.ClickEventInfo)
+{
+    this.Dataset1.addColumn("COL_CHK", "STRING");
+};
+
+this.btn_2_1_onclick = function(obj:nexacro.Button, e:nexacro.ClickEventInfo)
+{
+    var nRow = this.Dataset1.findRow("EMPL_ID", "KR120");
+    var sVal = this.Dataset1.getColumn(nRow, "FULL_NAME");
+    trace(sVal);
+    this.txtRtn1.set_value(sVal);
+};
+
+this.btn_2_2_onclick = function(obj:nexacro.Button, e:nexacro.ClickEventInfo)
+{
+    var nRow = this.Dataset1.findRowExpr("DEPT_CODE == 'K10' && SALARY > 6000");
+    var sVal = this.Dataset1.getColumn(nRow, "FULL_NAME");
+    this.txtRtn1.set_value(sVal);
+};
+
+this.btn_2_3_onclick = function(obj:nexacro.Button, e:nexacro.ClickEventInfo)
+{
+    var sText = "";
+    var arrRow = this.Dataset1.extractRows("DEPT_CODE == 'K10'");
+    for (var i = 0; i < arrRow.length; i++)
+    {
+        var sValue = this.Dataset1.getColumn(arrRow[i], "FULL_NAME");
+        sText += sValue + "\n";
+    }
+    this.txtRtn1.set_value(sText);
+};
+
+this.btn_3_1_onclick = function(obj:nexacro.Button, e:nexacro.ClickEventInfo)
+{
+    var nAvgM = this.Dataset1.getCaseAvg("GENDER == 'M'", "SALARY");
+    var nAvgW = this.Dataset1.getCaseAvg("GENDER == 'W'", "SALARY");
+    var nAvgW1 = this.Dataset1.getCaseAvg("GENDER == 'W'", "SALARY", 0, -1, false);
+    this.txtRtn1.set_value("남성 평균 급여 : " + nexacro.round(nAvgM, 2)
+        + "  여성 평균 급여 : " + nAvgW + "  test 여성 급여 : " + nAvgW1);
+};
+
+this.btn_3_2_onclick = function(obj:nexacro.Button, e:nexacro.ClickEventInfo)
+{
+    var nAvg = this.Dataset1.getAvg("SALARY + BONUS");
+    this.txtRtn1.set_value("보너스 + 급여의 평균 데이터 : " + nAvg);
+};
+
+this.btn_3_3_onclick = function(obj:nexacro.Button, e:nexacro.ClickEventInfo)
+{
+    this.Dataset1.set_keystring("S:-HIRE_DATE");
+};
+
+this.btn_4_1_onclick = function(obj:nexacro.Button, e:nexacro.ClickEventInfo)
+{
+    var nRow = this.Dataset4.insertRow(0);
+    var nType = this.Dataset4.getRowType(nRow);
+    this.txtRtn2.set_value("Insert RowType : " + nType);
+};
+
+this.btn_4_2_onclick = function(obj:nexacro.Button, e:nexacro.ClickEventInfo)
+{
+    this.Dataset4.setColumn(1, "FULL_NAME", "Nexacro");
+    var nType = this.Dataset4.getRowType(1);
+    this.txtRtn2.set_value("Update RowType : " + nType);
+};
+
+this.btn_4_3_onclick = function(obj:nexacro.Button, e:nexacro.ClickEventInfo)
+{
+    var sCurData = this.Dataset4.getColumn(1, "FULL_NAME");
+    var sOrgData = this.Dataset4.getOrgColumn(1, "FULL_NAME");
+    this.txtRtn2.set_value("sCurData : " + sCurData + "   sOrgData : " + sOrgData);
+};
+
+this.btn_4_4_onclick = function(obj:nexacro.Button, e:nexacro.ClickEventInfo)
+{
+    var arrRow = [3, 4, 5];
+    this.Dataset4.deleteMultiRows(arrRow);
+    var nDelCnt = this.Dataset4.getDeletedRowCount();
+    var sDelData = this.Dataset4.getDeletedColumn(0, "FULL_NAME");
+    this.txtRtn2.set_value("Del Count = " + nDelCnt + "  Del Data = " + sDelData);
+};
+
+this.btn_5_1_onclick = function(obj:nexacro.Button, e:nexacro.ClickEventInfo)
+{
+    this.Dataset5.copyData(this.Dataset4);
+    this.Grid5.createFormat();
+    this.Grid5.setRealRowSize(-1, 32);
+    this.Grid5.setRealRowSize(0, 32);
+};
+
+this.btn_5_2_onclick = function(obj:nexacro.Button, e:nexacro.ClickEventInfo)
+{
+    var nFromRow = this.Dataset4.findRow("EMPL_ID", "KR040");
+    var nToRow = this.Dataset5.addRow();
+    this.Dataset5.copyRow(nToRow, this.Dataset4, nFromRow);
+};

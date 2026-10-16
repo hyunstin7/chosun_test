@@ -1,0 +1,57 @@
+{
+  "structure": {
+    "result": "PASS",
+    "subjects": 6,
+    "total": 180,
+    "allMultipleChoice": true,
+    "nexacro": 30,
+    "codeBlankMultipleChoice": 23,
+    "supplemental": 7,
+    "sourceHandlers": 14,
+    "syntaxCheckedCompletions": 23,
+    "requiredFunctions": 30,
+    "externalScripts": [
+      "./quiz/questions3.js"
+    ],
+    "answerInputElements": 0
+  },
+  "regression": {
+    "result": "PASS",
+    "otherQuestionsUnchanged": 150,
+    "supplementalUnchanged": 7,
+    "codeTemplatesAndAnswersPreserved": 23
+  },
+  "browser": {
+    "result": "PASS",
+    "browser": "Chromium (offline DOM; exact app and bank scripts inserted into document)",
+    "externalDataScriptStaticCheck": [
+      "quiz/questions3.js"
+    ],
+    "subjects": 6,
+    "options": [
+      "데이터베이스 활용(1교시)",
+      "AIoT(2교시)",
+      "정보보안실무(3교시)",
+      "생성형챗봇디자인(4교시)",
+      "JAVA(5교시)",
+      "웹프레임워크(넥사크로)(7교시)"
+    ],
+    "freeTextAnswerFields": 0,
+    "choicesChecked": 720,
+    "completeCodeChecks": 92,
+    "duplicatesPrevented": 720,
+    "questionsCompleted": 30,
+    "uniqueQuestions": 30,
+    "reviewCompleted": true,
+    "wrongNoteCount": 1,
+    "noteIncludesCode": true,
+    "noteReloadCompatible": "not tested (file and local HTTP navigation blocked by environment policy)",
+    "mobileWidth": {
+      "client": 390,
+      "scroll": 390
+    },
+    "mobileQuestionLayoutChecks": 30,
+    "missingDataFileHandled": true,
+    "uncaughtPageErrors": []
+  }
+}

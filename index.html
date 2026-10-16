@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>퀴즈 시스템 Pro</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', 'Malgun Gothic', sans-serif; background: #f5f7fb; padding: 16px; display: flex; justify-content: center; color: #202a36; }
+  .container { width: 100%; max-width: 720px; min-width: 0; }
+  .card { background: white; border-radius: 14px; padding: 18px; box-shadow: 0 6px 20px rgba(0,0,0,.08); margin-bottom: 16px; }
+  h2 { font-size: 18px; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
+  h3 { font-size: 16px; line-height: 1.65; margin-bottom: 16px; white-space: pre-wrap; overflow-wrap: anywhere; }
+  #question.code-question { font-family: Consolas, 'D2Coding', 'Malgun Gothic', monospace; font-size: 14px; background: #f7f9fc; border-radius: 10px; padding: 14px; line-height: 1.65; }
+  .btn-group { display: flex; gap: 8px; flex-wrap: wrap; }
+  select, button { font-family: inherit; font-size: 14px; border-radius: 10px; border: 1px solid #ddd; padding: 10px; }
+  button { cursor: pointer; }
+  button:focus-visible, select:focus-visible { outline: 3px solid #4a90e2; outline-offset: 2px; }
+  #subjectSelect { min-width: 0; max-width: 100%; }
+  #noteSubjectSelect { min-width: 0; max-width: 56%; }
+  #startBtn { background: #4CAF50; color: white; border: none; font-weight: bold; }
+  #noteBtn { background: #ff9800; color: white; border: none; font-weight: bold; }
+  .source-info { color: #667382; font-size: 12px; line-height: 1.6; margin-top: 12px; overflow-wrap: anywhere; }
+  #loadError { color: #b42318; font-size: 14px; margin-top: 12px; line-height: 1.6; white-space: pre-wrap; }
+  #status { font-size: 13px; line-height: 1.7; color: #596575; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px dashed #ddd; }
+  #codeSnippet, .answer-code { font-family: Consolas, 'D2Coding', 'Malgun Gothic', monospace; white-space: pre-wrap; overflow-wrap: anywhere; tab-size: 4; }
+  #codeSnippet { background: #f7f9fc; border: 1px solid #dce4ee; border-radius: 10px; margin-bottom: 12px; padding: 16px; font-size: 13px; line-height: 1.8; }
+  .code-blank { color: #124ba0; background: #dfecff; font-weight: bold; border-radius: 4px; padding: 2px 3px; }
+  #choiceInstructions { background: #eef5ff; border-radius: 9px; margin-bottom: 12px; padding: 11px 13px; font-size: 13px; line-height: 1.6; }
+  .choice { display: block; width: 100%; margin: 8px 0; padding: 14px; border-radius: 10px; border: 1px solid #e1e6ee; background: #fafafa; text-align: left; font-family: inherit; font-size: 14px; line-height: 1.6; white-space: pre-wrap; overflow-wrap: anywhere; transition: background .15s; }
+  .choice:hover:not(:disabled) { background: #e8f0ff; border-color: #4a90e2; }
+  .choice:disabled { cursor: default; opacity: 1; }
+  .choice.correct-ans { background: #d4edda !important; border-color: #28a745 !important; color: #155724; }
+  .choice.wrong-ans { background: #f8d7da !important; border-color: #dc3545 !important; color: #721c24; }
+  .choice.tuple-choice { display: flex; align-items: flex-start; gap: 10px; white-space: normal; }
+  .choice-number { flex: 0 0 23px; font-weight: bold; font-size: 17px; line-height: 1.5; }
+  .choice-parts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; flex: 1; min-width: 0; }
+  .choice-part { min-width: 0; }
+  .choice-part-label { display: block; color: #637388; font-size: 12px; font-weight: 600; margin-bottom: 3px; }
+  .choice-part-value { display: block; font-family: Consolas, 'D2Coding', 'Malgun Gothic', monospace; font-size: 14px; white-space: pre-wrap; overflow-wrap: anywhere; }
+  #explanation { display: none; white-space: normal; overflow-wrap: anywhere; margin-top: 16px; padding: 15px; border-radius: 10px; font-size: 14px; line-height: 1.7; }
+  .ex-wrong { background: #fff3f3; border-left: 5px solid #e74c3c; }
+  .ex-correct { background: #f0fff4; border-left: 5px solid #2ecc71; }
+  .result-heading { font-size: 16px; font-weight: 700; margin-bottom: 12px; }
+  .section-heading { display: block; margin: 14px 0 7px; font-weight: 700; }
+  .choice-explanation { margin-top: 10px; padding: 10px; border-radius: 8px; background: rgba(255,255,255,.75); }
+  .choice-explanation-title, .choice-explanation-text { white-space: pre-wrap; overflow-wrap: anywhere; }
+  .choice-explanation-title { font-weight: 600; margin-bottom: 5px; }
+  .answer-code { margin: 6px 0 12px; padding: 12px; background: rgba(255,255,255,.8); border: 1px solid #dce4ee; border-radius: 8px; color: #202a36; font-size: 13px; line-height: 1.7; }
+  #nextBtn { display: none; width: 100%; margin-top: 14px; padding: 16px; border-radius: 30px; border: none; background: #111; color: white; font-size: 16px; }
+  .modal { display: none; position: fixed; z-index: 1000; inset: 0; background: rgba(0,0,0,.6); padding: 20px 0; }
+  .modal-content { background: white; margin: 20px auto; padding: 25px; width: 95%; max-width: 650px; border-radius: 20px; max-height: 85vh; overflow-y: auto; }
+  .modal-header { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+  .tab-menu { display: flex; gap: 4px; background: #eee; border-radius: 10px; padding: 4px; margin: 15px 0; }
+  .tab-link { flex: 1; padding: 10px 5px; font-size: 13px; border: none; background: transparent; border-radius: 8px; }
+  .tab-link.active { background: white; box-shadow: 0 2px 5px rgba(0,0,0,.1); font-weight: bold; color: #2374a9; }
+  .note-item { border-bottom: 1px solid #f0f0f0; padding: 15px 0; overflow-wrap: anywhere; }
+  .note-question { margin-bottom: 8px; white-space: pre-wrap; line-height: 1.6; }
+  .note-count { color: #b42318; font-size: 12px; margin: 6px 0; }
+  .note-ans-box { display: none; margin-top: 8px; padding: 10px; background: #f9f9f9; border-left: 4px solid #2ecc71; white-space: pre-wrap; overflow-wrap: anywhere; font-size: 14px; line-height: 1.6; }
+  .empty-note { text-align: center; padding: 20px; color: #667382; }
+  #closeNoteBtn { width: 100%; margin-top: 20px; padding: 12px; border: none; background: #eee; }
+  @media (max-width: 540px) {
+    body { padding: 10px; }
+    .card { padding: 14px; }
+    #codeSnippet { padding: 12px; font-size: 12px; }
+    .choice { padding: 12px; }
+    .choice-parts { grid-template-columns: minmax(0,1fr); gap: 5px; }
+    .choice-part { display: flex; gap: 7px; align-items: baseline; }
+    .choice-part-label { flex: 0 0 35px; margin: 0; }
+    .choice-part-value { min-width: 0; }
+    .modal-content { padding: 18px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="card">
+    <h2>📂 과목 선택</h2>
+    <div class="btn-group">
+      <select id="subjectSelect" aria-label="과목 선택"><option value="">과목을 선택하세요</option></select>
+      <button id="startBtn" type="button">▶ 시작</button>
+      <button id="noteBtn" type="button">📝 오답노트</button>
+    </div>
+    <p class="source-info">문제 데이터: <b>quiz/questions3.js</b> <span id="bankSummary"></span></p>
+    <p id="loadError" role="alert" hidden></p>
+  </div>
+  <div class="card" id="quizCard" style="display:none;">
+    <div id="status" aria-live="polite"></div>
+    <h3 id="question"></h3>
+    <pre id="codeSnippet" style="display:none;" aria-label="빈칸이 있는 예시 코드"></pre>
+    <div id="choiceInstructions" style="display:none;">빈칸 <b>【1】 → 【2】 → 【3】</b>에 들어갈 내용의 <b>올바른 조합 하나</b>를 고르세요.</div>
+    <div id="choices" role="group" aria-label="정답 보기"></div>
+    <div id="explanation" aria-live="polite"></div>
+    <button id="nextBtn" type="button">다음 문제 →</button>
+  </div>
+</div>
+<div id="noteModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="noteTitle">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2 id="noteTitle" style="margin:0;">📝 오답노트</h2>
+      <select id="noteSubjectSelect" aria-label="오답노트 과목"></select>
+    </div>
+    <div class="tab-menu" aria-label="오답 횟수">
+      <button type="button" class="tab-link active" data-tab="0">1회 틀림</button>
+      <button type="button" class="tab-link" data-tab="1">2회 틀림</button>
+      <button type="button" class="tab-link" data-tab="2">3회 이상</button>
+    </div>
+    <div id="noteList"></div>
+    <button type="button" id="closeNoteBtn">닫기</button>
+  </div>
+</div>
+
+<!-- 유일한 외부 문제 데이터. question.js / questions2.js는 불러오지 않습니다. -->
+<script src="./quiz/questions3.js"></script>
+<script>
+'use strict';
+
+// 객관식 UI: 코드 빈칸도 보기 조합을 선택합니다. 답안 입력창은 사용하지 않습니다.
+let questions = [], TOTAL = 0;
+let mainSet = [], wrongSet = [], idx = 0;
+let sessionCorrect = 0, sessionWrong = 0;
+let currentSubject = '', isRoundOne = true, questionResolved = false;
+let currentMappedChoices = [], currentTab = 0;
+let noteData = {};
+try {
+  const stored = JSON.parse(sessionStorage.getItem('quizNoteData') || '{}');
+  if (stored && typeof stored === 'object' && !Array.isArray(stored)) noteData = stored;
+} catch (_) { noteData = {}; }
+
+const SUBJECT_ORDER = ['데이터베이스 활용', 'AIoT', '정보보안실무', '생성형챗봇디자인', 'JAVA', '웹프레임워크(넥사크로)'];
+const SUBJECT_LABELS = {
+  '데이터베이스 활용': '데이터베이스 활용(1교시)',
+  'AIoT': 'AIoT(2교시)',
+  '정보보안실무': '정보보안실무(3교시)',
+  '생성형챗봇디자인': '생성형챗봇디자인(4교시)',
+  'JAVA': 'JAVA(5교시)',
+  '웹프레임워크(넥사크로)': '웹프레임워크(넥사크로)(7교시)'
+};
+const CIRCLE_NUMS = ['①', '②', '③', '④'];
+const quizCard = document.getElementById('quizCard');
+const statusEl = document.getElementById('status');
+const qEl = document.getElementById('question');
+const cEl = document.getElementById('choices');
+const codeSnippet = document.getElementById('codeSnippet');
+const choiceInstructions = document.getElementById('choiceInstructions');
+const exEl = document.getElementById('explanation');
+const nextBtn = document.getElementById('nextBtn');
+const modal = document.getElementById('noteModal');
+const subjectSelect = document.getElementById('subjectSelect');
+const noteSelect = document.getElementById('noteSubjectSelect');
+
+function getOrderedSubjects() {
+  const bank = window.questions || {};
+  const subjects = Object.keys(bank).filter(sub => Array.isArray(bank[sub]));
+  return SUBJECT_ORDER.filter(sub => subjects.includes(sub))
+    .concat(subjects.filter(sub => !SUBJECT_ORDER.includes(sub)));
+}
+function getSubjectLabel(subject) { return SUBJECT_LABELS[subject] || subject; }
+function getChoiceLabel(index) { return CIRCLE_NUMS[index] || `${index + 1}.`; }
+function shuffle(items) {
+  const result = items.slice();
+  for (let i = result.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [result[i], result[j]] = [result[j], result[i]];
+  }
+  return result;
+}
+function isCodeBlankMC(q) {
+  return Boolean(q && q.type === 'mc' && q.blankCount === 3 && typeof q.code === 'string'
+    && Array.isArray(q.choiceParts) && q.choiceParts.length === 4
+    && q.choiceParts.every(parts => Array.isArray(parts) && parts.length === 3));
+}
+function getCompletedCode(q) {
+  if (!isCodeBlankMC(q)) return '';
+  const parts = q.choiceParts[q.a];
+  return q.code.replace(/【([123])】/g, (_, digit) => parts[Number(digit) - 1]);
+}
+function getAnswerText(q) { return q.c[q.a]; }
+function getExplanationText(q) {
+  return Array.isArray(q.ex) ? (q.ex[q.a] || '등록된 해설이 없습니다.')
+    : (typeof q.ex === 'string' ? q.ex : '등록된 해설이 없습니다.');
+}
+function node(tag, className, text) {
+  const el = document.createElement(tag);
+  if (className) el.className = className;
+  if (text !== undefined) el.textContent = text;
+  return el;
+}
+function renderCode(el, text) {
+  el.replaceChildren();
+  // Treat source code strictly as text; only the three blank markers are highlighted.
+  String(text).split(/(【[123]】)/g).forEach(part => {
+    el.appendChild(/^【[123]】$/.test(part) ? node('mark', 'code-blank', part) : document.createTextNode(part));
+  });
+}
+function initialize() {
+  const subjects = getOrderedSubjects();
+  if (!subjects.length) {
+    const error = document.getElementById('loadError');
+    error.hidden = false;
+    error.textContent = '문제 데이터를 읽지 못했습니다. index.html과 같은 폴더의 quiz/questions3.js를 확인하세요.';
+    document.getElementById('startBtn').disabled = true;
+    document.getElementById('noteBtn').disabled = true;
+    return;
+  }
+  subjects.forEach(sub => {
+    subjectSelect.add(new Option(getSubjectLabel(sub), sub));
+    noteSelect.add(new Option(getSubjectLabel(sub), sub));
+  });
+  const total = subjects.reduce((sum, sub) => sum + window.questions[sub].length, 0);
+  document.getElementById('bankSummary').textContent = ` · ${subjects.length}과목 / ${total}문항`;
+}
+
+function startQuiz() {
+  currentSubject = subjectSelect.value;
+  if (!currentSubject) { alert('과목을 선택해 주세요!'); return; }
+  questions = (window.questions[currentSubject] || []).slice();
+  if (!questions.length) { alert('등록된 문제가 없습니다.'); return; }
+  TOTAL = questions.length;
+  mainSet = shuffle(questions);
+  wrongSet = [];
+  idx = 0; sessionCorrect = 0; sessionWrong = 0;
+  isRoundOne = true;
+  quizCard.style.display = 'block';
+  loadQuestion();
+}
+function resetUI() {
+  questionResolved = false;
+  currentMappedChoices = [];
+  cEl.replaceChildren();
+  codeSnippet.replaceChildren(); codeSnippet.style.display = 'none';
+  choiceInstructions.style.display = 'none';
+  exEl.replaceChildren(); exEl.style.display = 'none'; exEl.className = '';
+  nextBtn.style.display = 'none'; nextBtn.onclick = null;
+}
+function loadQuestion() {
+  if (idx >= mainSet.length) {
+    if (wrongSet.length) {
+      isRoundOne = false;
+      mainSet = shuffle(wrongSet);
+      wrongSet = [];
+      idx = 0;
+      alert('한 사이클이 끝났습니다. 틀린 문제 복습을 시작합니다!');
+    } else {
+      resetUI();
+      qEl.classList.remove('code-question');
+      qEl.textContent = isRoundOne ? '🎉 축하합니다! 모든 문제를 한 번에 다 맞히셨습니다.' : '🎊 모든 문제를 완벽하게 학습했습니다!';
+      statusEl.textContent = `${getSubjectLabel(currentSubject)} · 학습 완료`;
+      return;
+    }
+  }
+  resetUI();
+  const q = mainSet[idx];
+  qEl.textContent = q.q;
+  qEl.classList.toggle('code-question', Boolean(q.codeQuestion) && !q.code);
+  if (q.type !== 'mc' || !Array.isArray(q.c) || !Number.isInteger(q.a)) {
+    qEl.textContent = '지원하지 않는 문제 형식입니다. 최신 questions3.js를 함께 적용해 주세요.';
+    return;
+  }
+  if (isCodeBlankMC(q)) {
+    renderCode(codeSnippet, q.code);
+    codeSnippet.style.display = 'block';
+    choiceInstructions.style.display = 'block';
+  }
+  currentMappedChoices = shuffle(q.c.map((text, originalIndex) => ({
+    text, originalIndex, isAns: originalIndex === q.a,
+    explanation: Array.isArray(q.ex) ? (q.ex[originalIndex] || '등록된 해설이 없습니다.') : getExplanationText(q),
+    parts: isCodeBlankMC(q) ? q.choiceParts[originalIndex] : null
+  })));
+  currentMappedChoices.forEach((item, displayIndex) => {
+    const button = node('button', 'choice');
+    button.type = 'button';
+    button.dataset.originalIndex = item.originalIndex;
+    button.setAttribute('aria-label', `${getChoiceLabel(displayIndex)} ${item.text}`);
+    if (item.parts) {
+      button.classList.add('tuple-choice');
+      button.appendChild(node('span', 'choice-number', getChoiceLabel(displayIndex)));
+      const parts = node('span', 'choice-parts');
+      item.parts.forEach((value, i) => {
+        const part = node('span', 'choice-part');
+        part.append(node('span', 'choice-part-label', `【${i + 1}】`),
+          node('code', 'choice-part-value', value || '(부호 없음)'));
+        parts.appendChild(part);
+      });
+      button.appendChild(parts);
+    } else {
+      button.textContent = `${getChoiceLabel(displayIndex)} ${item.text}`;
+    }
+    button.onclick = () => checkMC(item, q, currentMappedChoices);
+    cEl.appendChild(button);
+  });
+  updateStatus();
+}
+function checkMC(selected, q, allMapped) {
+  if (questionResolved || mainSet[idx] !== q) return;
+  const buttons = Array.from(cEl.querySelectorAll('.choice'));
+  buttons.forEach((button, i) => {
+    button.disabled = true;
+    if (allMapped[i].isAns) button.classList.add('correct-ans');
+    if (allMapped[i] === selected && !selected.isAns) button.classList.add('wrong-ans');
+  });
+  exEl.className = selected.isAns ? 'ex-correct' : 'ex-wrong';
+  exEl.appendChild(node('p', 'result-heading', selected.isAns ? '정답입니다! ✨' : '틀렸습니다. 정답과 해설을 확인하세요.'));
+  if (isCodeBlankMC(q)) {
+    exEl.append(node('b', 'section-heading', '정답 조합'), node('pre', 'answer-code', getAnswerText(q)));
+    exEl.append(node('b', 'section-heading', '완성 코드'), node('pre', 'answer-code', getCompletedCode(q)));
+  }
+  exEl.appendChild(node('b', 'section-heading', '보기별 해설'));
+  allMapped.forEach((item, index) => {
+    const block = node('div', 'choice-explanation');
+    block.append(node('p', 'choice-explanation-title', `${getChoiceLabel(index)} ${item.isAns ? '✅ 정답' : '• 오답'}\n${item.text}`),
+      node('p', 'choice-explanation-text', item.explanation));
+    exEl.appendChild(block);
+  });
+  exEl.style.display = 'block';
+  if (!selected.isAns) { recordWrong(q); wrongSet.push(q); }
+  finishQ(q, selected.isAns);
+}
+function finishQ(q, isCorrect) {
+  if (questionResolved || mainSet[idx] !== q) return;
+  questionResolved = true;
+  if (isCorrect) sessionCorrect++; else sessionWrong++;
+  nextBtn.style.display = 'block';
+  nextBtn.onclick = () => {
+    if (!questionResolved || mainSet[idx] !== q) return;
+    idx++;
+    loadQuestion();
+  };
+  updateStatus();
+}
+function updateStatus() {
+  const solved = sessionCorrect + sessionWrong;
+  const rate = solved ? Math.round(sessionCorrect / solved * 100) : 0;
+  statusEl.textContent = `${getSubjectLabel(currentSubject)}\n[${isRoundOne ? '전체 사이클' : '오답 복습'} ${idx + 1}/${mainSet.length}] 맞힌 문제: ${sessionCorrect} | 정답률: ${rate}%`;
+  statusEl.style.whiteSpace = 'pre-line';
+}
+
+function recordWrong(q) {
+  if (!noteData[currentSubject] || typeof noteData[currentSubject] !== 'object') noteData[currentSubject] = {};
+  const old = Number(noteData[currentSubject][q.id]) || 0;
+  noteData[currentSubject][q.id] = old + 1;
+  try { sessionStorage.setItem('quizNoteData', JSON.stringify(noteData)); } catch (_) { /* Memory-only fallback. */ }
+}
+function openNote() {
+  modal.style.display = 'block';
+  noteSelect.value = currentSubject || getOrderedSubjects()[0];
+  renderNote();
+  noteSelect.focus();
+}
+function changeTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.tab-link').forEach((el, i) => el.classList.toggle('active', i === tab));
+  renderNote();
+}
+function renderNote() {
+  const sub = noteSelect.value;
+  const list = document.getElementById('noteList');
+  list.replaceChildren();
+  const notes = noteData[sub] && typeof noteData[sub] === 'object' ? noteData[sub] : {};
+  const entries = Object.entries(notes).filter(([id, count]) => {
+    const correctBand = currentTab === 0 ? count === 1 : currentTab === 1 ? count === 2 : count >= 3;
+    return correctBand && (window.questions[sub] || []).some(q => String(q.id) === id);
+  });
+  if (!entries.length) { list.appendChild(node('p', 'empty-note', '해당하는 오답 기록이 없습니다.')); return; }
+  entries.forEach(([id, count]) => {
+    const q = window.questions[sub].find(item => String(item.id) === id);
+    const item = node('div', 'note-item');
+    item.append(node('p', 'note-question', `Q. ${q.q}`), node('p', 'note-count', `${count}회 오답`));
+    if (isCodeBlankMC(q)) {
+      const code = node('pre', 'answer-code'); renderCode(code, q.code); item.appendChild(code);
+    }
+    const reveal = node('button', '', '정답/해설 보기'); reveal.type = 'button';
+    const answer = node('div', 'note-ans-box');
+    answer.append(node('b', 'section-heading', '정답'), node('pre', 'answer-code', getAnswerText(q)));
+    if (isCodeBlankMC(q)) answer.append(node('b', 'section-heading', '완성 코드'), node('pre', 'answer-code', getCompletedCode(q)));
+    answer.append(node('b', 'section-heading', '해설'), node('p', '', getExplanationText(q)));
+    reveal.onclick = () => { answer.style.display = 'block'; };
+    item.append(reveal, answer); list.appendChild(item);
+  });
+}
+function closeModal() { modal.style.display = 'none'; document.getElementById('noteBtn').focus(); }
+document.getElementById('startBtn').onclick = startQuiz;
+document.getElementById('noteBtn').onclick = openNote;
+document.getElementById('closeNoteBtn').onclick = closeModal;
+noteSelect.onchange = renderNote;
+document.querySelectorAll('.tab-link').forEach(button => { button.onclick = () => changeTab(Number(button.dataset.tab)); });
+modal.onclick = event => { if (event.target === modal) closeModal(); };
+document.addEventListener('keydown', event => { if (event.key === 'Escape' && modal.style.display === 'block') closeModal(); });
+initialize();
+</script>
+</body>
+</html>
